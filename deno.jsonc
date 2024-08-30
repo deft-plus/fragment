@@ -27,7 +27,7 @@
     "lineWidth": 100,
     "indentWidth": 2,
     "singleQuote": true,
-    "proseWrap": "always"
+    "proseWrap": "never"
   },
   "lint": {
     "exclude": ["node_modules/"],

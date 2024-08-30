@@ -1,15 +1,12 @@
 # `@fragment/signal`
 
-This module provides the `signal` function for creating reactive values. Signals notify consumers
-when their value changes.
+This module provides the `signal` function for creating reactive values. Signals notify consumers when their value changes.
 
 ## Basics
 
-A signal is a function (`() => T`) that returns its current value. It doesn't trigger side effects
-but may recompute values lazily.
+A signal is a function (`() => T`) that returns its current value. It doesn't trigger side effects but may recompute values lazily.
 
-**Reactive Contexts:** When a signal is accessed in a reactive context, it registers as a
-dependency. The context updates when any signal it depends on changes.
+**Reactive Contexts:** When a signal is accessed in a reactive context, it registers as a dependency. The context updates when any signal it depends on changes.
 
 ## Writable Signals
 
@@ -29,8 +26,7 @@ counter.update((count) => count + 1);
 counter.mutate((list) => list.push({ title: 'New Task' }));
 ```
 
-**Equality Comparator:** Optionally, provide a function to compare new and old values to prevent
-unnecessary updates.
+**Equality Comparator:** Optionally, provide a function to compare new and old values to prevent unnecessary updates.
 
 ## Read-Only Signals
 
@@ -44,8 +40,7 @@ const counter = signal(0).readonly();
 
 ## Computed Values
 
-We can create new expressions that depend on signals by wrapping a signal in a function
-(`() => signal`). When a signal changes, it updates the dependent function.
+We can create new expressions that depend on signals by wrapping a signal in a function (`() => signal`). When a signal changes, it updates the dependent function.
 
 Example:
 
@@ -66,8 +61,7 @@ const isEven = signal.memo(() => counter() % 2 === 0);
 
 ## Promised Signals
 
-The `signal.promise()` function creates a signal that resolves to a promise. It has a `status`
-property that indicates the promise state.
+The `signal.promise()` function creates a signal that resolves to a promise. It has a `status` property that indicates the promise state.
 
 ```typescript
 const data = signal.promise(async () => {
@@ -91,8 +85,7 @@ setInterval(() => {
 
 ## Effects
 
-`signal.effect()` schedules a function to run when signals it depends on change and returns a
-cleanup function. You can also provide a cleanup function to run before the effect is re-run.
+`signal.effect()` schedules a function to run when signals it depends on change and returns a cleanup function. You can also provide a cleanup function to run before the effect is re-run.
 
 Example:
 
@@ -109,8 +102,7 @@ cleanup();
 
 ## Batch Updates
 
-Use `signal.batch()` to batch updates to signals. It prevents reactivity until the batch is
-complete.
+Use `signal.batch()` to batch updates to signals. It prevents reactivity until the batch is complete.
 
 Example:
 
