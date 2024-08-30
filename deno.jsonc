@@ -1,7 +1,12 @@
 {
-  "tasks": {},
-  "scopes": {},
-  "imports": {},
+  "tasks": {
+    "test": "deno test --allow-all ."
+  },
+  "imports": {
+    "@/signal/": "./signal/",
+    "@std/async": "jsr:@std/async@^1.0.4",
+    "@std/testing": "jsr:@std/testing@^1.0.1"
+  },
   "exports": {},
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "dom.extras", "deno.ns"],
@@ -18,13 +23,11 @@
   },
   "fmt": {
     "include": ["./"],
-    "options": {
-      "useTabs": false,
-      "lineWidth": 100,
-      "indentWidth": 2,
-      "singleQuote": true,
-      "proseWrap": "always"
-    }
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "singleQuote": true,
+    "proseWrap": "always"
   },
   "lint": {
     "exclude": ["node_modules/"],
