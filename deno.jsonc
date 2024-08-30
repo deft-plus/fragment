@@ -1,0 +1,46 @@
+{
+  "tasks": {},
+  "scopes": {},
+  "imports": {},
+  "exports": {},
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "dom.extras", "deno.ns"],
+    "allowJs": false,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "fmt": {
+    "include": ["./"],
+    "options": {
+      "useTabs": false,
+      "lineWidth": 100,
+      "indentWidth": 2,
+      "singleQuote": true,
+      "proseWrap": "always"
+    }
+  },
+  "lint": {
+    "exclude": ["node_modules/"],
+    "rules": {
+      "tags": ["recommended"],
+      "include": [
+        "no-external-import",
+        "ban-untagged-todo",
+        "camelcase",
+        "eqeqeq",
+        "no-eval",
+        "no-non-null-assertion",
+        "no-non-null-asserted-optional-chain",
+        "no-sparse-arrays"
+      ],
+      "exclude": ["no-empty-interface"]
+    }
+  }
+}
