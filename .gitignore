@@ -2,10 +2,8 @@
 
 # Deno
 deno.lock
+.coverage
 
 # misc
 .DS_Store
 *.pem
-
-# testing
-.coverage

@@ -42,5 +42,4 @@ _Miguel Bogota_
   </a>
 </p>
 
-See also the list of [contributors](https://github.com/deft-plus/fragment/graphs/contributors) who
-participated in this project.
+See also the list of [contributors](https://github.com/deft-plus/fragment/graphs/contributors) who participated in this project.
