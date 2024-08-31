@@ -59,6 +59,18 @@ Example:
 const isEven = signal.memo(() => counter() % 2 === 0);
 ```
 
+You can also configure the memoized signal with an equality comparator to prevent unnecessary updates. Or pass an onChange callback to run when the value changes.
+
+```typescript
+const isEven = signal.memo(
+  () => counter() % 2 === 0,
+  {
+    equals: (prev, next) => prev === next,
+    onChange: (value) => console.log('Changed:', value),
+  },
+);
+```
+
 ## Promised Signals
 
 The `signal.promise()` function creates a signal that resolves to a promise. It has a `status` property that indicates the promise state.
@@ -85,30 +97,32 @@ setInterval(() => {
 
 ## Effects
 
-`signal.effect()` schedules a function to run when signals it depends on change and returns a cleanup function. You can also provide a cleanup function to run before the effect is re-run.
+`signal.effect()` schedules a function to run when signals it depends on change and returns a ref object. You can also provide a cleanup function to run before the effect is re-run.
 
 Example:
 
 ```typescript
 const counter = signal(0);
-const cleanup = signal.effect(() => {
+const effectRef = signal.effect(() => {
   console.log('Counter:', counter());
   return () => console.log('Cleanup');
 });
 
 counter.set(1);
-cleanup();
+effectRef.destroy();
 ```
 
-## Batch Updates
+## Untracked Values
 
-Use `signal.batch()` to batch updates to signals. It prevents reactivity until the batch is complete.
+Use `signal.untrack()` to create a signal that doesn't trigger reactivity when accessed in a reactive context.
 
 Example:
 
 ```typescript
-signal.batch(() => {
-  counter.set(1);
-  counter.set(2);
+const counter = signal(0);
+const untrackedValue = counter.untrack();
+
+signal.effect(() => {
+  console.log('Untracked:', counter.untrack());
 });
 ```
