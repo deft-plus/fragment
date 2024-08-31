@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://github.com/deft-plus/fragment/blob/latest/LICENCE
  */
 
-import { ReactiveNode, setCurrentConsumer } from '@/signal/_graph.ts';
+import { ReactiveNode, setActiveConsumer } from '@/signal/_graph.ts';
 
 /** Function to clean up after a reactive expression. */
 export type CleanupFn = () => void;
@@ -22,17 +22,14 @@ const NOOP_CLEANUP: CleanupFn = () => {};
  * on an external scheduling function to call `Watch.run()`.
  */
 export class Watch extends ReactiveNode {
-  protected override readonly allowSignalWrites: boolean;
   private isDirty = false;
   private cleanupFn = NOOP_CLEANUP;
 
   constructor(
     private callback: WatchCallback,
     private schedule: (watch: Watch) => void,
-    allowSignalWrites: boolean,
   ) {
     super();
-    this.allowSignalWrites = allowSignalWrites;
   }
 
   /** Notify that this watch needs to be re-scheduled. */
@@ -63,13 +60,13 @@ export class Watch extends ReactiveNode {
       return;
     }
 
-    const previousConsumer = setCurrentConsumer(this);
+    const previousConsumer = setActiveConsumer(this);
     this.trackingVersion++;
     try {
       this.cleanupFn();
       this.cleanupFn = this.callback() ?? NOOP_CLEANUP;
     } finally {
-      setCurrentConsumer(previousConsumer);
+      setActiveConsumer(previousConsumer);
     }
   }
 

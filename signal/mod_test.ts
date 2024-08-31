@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://github.com/deft-plus/fragment/blob/latest/LICENCE
  */
 
-import { describe, it } from '@std/testing/bdd';
+import { describe, test } from '@std/testing/bdd';
 import { expect } from '@std/expect';
 import { delay } from '@std/async/delay';
 import { signal } from '@/signal/mod.ts';
@@ -17,14 +17,14 @@ type TestingUser = {
   age: number;
 };
 
-describe('signal()', () => {
-  it('should create a signal', () => {
+describe('signal', () => {
+  test('should create a signal', () => {
     const counter = signal(0);
 
     expect(counter()).toBe(0);
   });
 
-  it('should set a signal', () => {
+  test('should set a signal', () => {
     const counter = signal(0);
 
     counter.set(1);
@@ -32,7 +32,7 @@ describe('signal()', () => {
     expect(counter()).toBe(1);
   });
 
-  it('should update a signal', () => {
+  test('should update a signal', () => {
     const counter = signal(0);
 
     counter.update((value) => value + 1);
@@ -40,7 +40,7 @@ describe('signal()', () => {
     expect(counter()).toBe(1);
   });
 
-  it('should mutate a signal', () => {
+  test('should mutate a signal', () => {
     const counter = signal<TestingUser>({ name: 'Alice', age: 42 });
 
     counter.mutate((value) => {
@@ -50,7 +50,7 @@ describe('signal()', () => {
     expect(counter().name).toBe('Bob');
   });
 
-  it('should create a readonly signal', () => {
+  test('should create a readonly signal', () => {
     const counter = signal(0).readonly();
 
     expect(counter()).toBe(0);
@@ -63,7 +63,7 @@ describe('signal()', () => {
     expect(writableKeys).toBeUndefined();
   });
 
-  it('should subscribe to readonly signals', () => {
+  test('should subscribe to readonly signals', () => {
     const privateCounter = signal(0);
 
     const counter = {
@@ -89,7 +89,7 @@ describe('signal()', () => {
     expect(counter.readonly()).toBe(2);
   });
 
-  it('should allow to use `onChange` hook', () => {
+  test('should allow to use `onChange` hook', () => {
     const called = [] as number[];
 
     const counter = signal(0, {
@@ -108,7 +108,7 @@ describe('signal()', () => {
     expect(called).toStrictEqual([1, 23]);
   });
 
-  it('should allow to use computed values', () => {
+  test('should allow to use computed values', () => {
     const counter = signal(0);
     const doubleCounter = () => counter() * 2;
 
@@ -119,7 +119,7 @@ describe('signal()', () => {
     expect(doubleCounter()).toBe(2);
   });
 
-  it('should allow to pass signals as params and subscribe to changes', () => {
+  test('should allow to pass signals as params and subscribe to changes', () => {
     const firstName = signal('Alice');
     const lastName = signal('Smith');
 
@@ -139,7 +139,7 @@ describe('signal()', () => {
     expect(displayName()).toBe('Bob Smith');
   });
 
-  it('should allow to use memoized values', () => {
+  test('should allow to use memoized values', () => {
     const counter = signal(0);
     const doubleCounter = signal.memo(() => counter() * 2);
 
@@ -150,7 +150,7 @@ describe('signal()', () => {
     expect(doubleCounter()).toBe(2);
   });
 
-  it('should allow to use memoized values with different equals fn', () => {
+  test('should allow to use memoized values with different equals fn', () => {
     const counter = signal(0);
 
     // Can only be set to a value greater than or equal to the current value.
@@ -178,7 +178,7 @@ describe('signal()', () => {
     expect(doubleCounter()).toBe(8);
   });
 
-  it('should schedule on dependencies (memoized) change', async () => {
+  test('should schedule on dependencies (memoized) change', async () => {
     const counter = signal(0);
     const doubleCounter = signal.memo(() => counter() * 2);
 
@@ -197,7 +197,7 @@ describe('signal()', () => {
     expect(effectCounter).toStrictEqual([0, 2]);
   });
 
-  it('should not make surrounding effect depend on the signal', async () => {
+  test('should not make surrounding effect depend on the signal', async () => {
     const counter = signal(0);
 
     const effectCounter = [] as number[];
@@ -215,7 +215,7 @@ describe('signal()', () => {
     expect(effectCounter).toStrictEqual([0]);
   });
 
-  it('should batch updates', async () => {
+  test('should batch updates', async () => {
     const counter = signal(0);
 
     const effectCounter = [] as number[];
@@ -231,7 +231,7 @@ describe('signal()', () => {
     expect(effectCounter).toStrictEqual([2]);
   });
 
-  it('should convert a promise to a signal', async () => {
+  test('should convert a promise to a signal', async () => {
     const data1 = signal.promise<number>(
       new Promise((resolve) => delay(5).then(() => resolve(42))),
     );

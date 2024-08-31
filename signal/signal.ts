@@ -16,8 +16,6 @@ import {
 import { ReactiveNode } from '@/signal/_graph.ts';
 import { untracked } from '@/signal/untracked.ts';
 
-const throwInvalidWriteError = () => {};
-
 /** Options for creating a signal. */
 export type SignalCreationOptions<T> = SignalOptions<T>;
 
@@ -55,22 +53,8 @@ class WritableSignalImpl<T> extends ReactiveNode {
     super();
   }
 
-  protected override allowSignalWrites = false;
-
-  protected override onDependencyChange(): void {
-    // Writable signals are not consumers, so this doesn't apply.
-  }
-
-  protected override updateProducerValueVersion(): void {
-    // Value versions are always up-to-date for writable signals.
-  }
-
   /** Set a new value for the signal and notify consumers if changed. */
   set(newValue: T): void {
-    if (!this.updatesAllowed) {
-      throwInvalidWriteError();
-    }
-
     if (!this.options.equal(this.value, newValue)) {
       this.value = newValue;
       this.valueVersion++;
@@ -81,19 +65,11 @@ class WritableSignalImpl<T> extends ReactiveNode {
 
   /** Update the signal's value using the provided function. */
   update(updater: (value: T) => T): void {
-    if (!this.updatesAllowed) {
-      throwInvalidWriteError();
-    }
-
     this.set(updater(this.value));
   }
 
   /** Apply a function to mutate the signal's value in-place. */
   mutate(mutator: (value: T) => void): void {
-    if (!this.updatesAllowed) {
-      throwInvalidWriteError();
-    }
-
     mutator(this.value);
     this.valueVersion++;
     this.notifyConsumers();

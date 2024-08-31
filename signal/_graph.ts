@@ -10,15 +10,15 @@
 let nextId = 0;
 
 /** The currently active reactive consumer, or `null` if none. */
-let currentConsumer: ReactiveNode | null = null;
+let activeConsumer: ReactiveNode | null = null;
 
 /** Whether change notifications are currently being propagated. */
 let notifying = false;
 
 /** Sets the current reactive consumer and returns the previous one. */
-export function setCurrentConsumer(consumer: ReactiveNode | null): ReactiveNode | null {
-  const previous = currentConsumer;
-  currentConsumer = consumer;
+export function setActiveConsumer(consumer: ReactiveNode | null): ReactiveNode | null {
+  const previous = activeConsumer;
+  activeConsumer = consumer;
   return previous;
 }
 
@@ -53,14 +53,11 @@ export abstract class ReactiveNode {
   /** Version of the producer's value. */
   protected valueVersion = 0;
 
-  /** Whether signal writes are allowed for this consumer. */
-  protected abstract allowSignalWrites: boolean;
-
   /** Called when a dependency may have changed. */
-  protected abstract onDependencyChange(): void;
+  protected onDependencyChange(): void {}
 
   /** Called when a consumer checks if the producer's value has changed. */
-  protected abstract updateProducerValueVersion(): void;
+  protected updateProducerValueVersion(): void {}
 
   /** Checks if any of this node's dependencies have actually changed. */
   protected checkDependencies(): boolean {
@@ -108,34 +105,29 @@ export abstract class ReactiveNode {
       throw new Error('Cannot read signals during notification phase.');
     }
 
-    if (currentConsumer === null) {
+    if (activeConsumer === null) {
       return;
     }
 
-    let dependency = currentConsumer.producers.get(this.id);
+    let dependency = activeConsumer.producers.get(this.id);
     if (dependency === undefined) {
       dependency = {
-        consumerRef: currentConsumer.ref,
+        consumerRef: activeConsumer.ref,
         producerRef: this.ref,
         producerVersion: this.valueVersion,
-        consumerVersion: currentConsumer.trackingVersion,
+        consumerVersion: activeConsumer.trackingVersion,
       };
-      currentConsumer.producers.set(this.id, dependency);
-      this.consumers.set(currentConsumer.id, dependency);
+      activeConsumer.producers.set(this.id, dependency);
+      this.consumers.set(activeConsumer.id, dependency);
     } else {
       dependency.producerVersion = this.valueVersion;
-      dependency.consumerVersion = currentConsumer.trackingVersion;
+      dependency.consumerVersion = activeConsumer.trackingVersion;
     }
   }
 
   /** Whether this consumer has any producers. */
   protected get hasProducers(): boolean {
     return this.producers.size > 0;
-  }
-
-  /** Whether this producer is allowed to update based on the current consumer. */
-  protected get updatesAllowed(): boolean {
-    return currentConsumer?.allowSignalWrites !== false;
   }
 
   /** Checks if the producer's value has changed compared to the last recorded version. */

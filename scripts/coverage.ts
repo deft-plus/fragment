@@ -2,10 +2,7 @@ import { resolve } from '@std/path/resolve';
 import { basename } from '@std/path/basename';
 import { relative } from '@std/path/relative';
 import { TextLineStream } from '@std/streams/text-line-stream';
-
-// Temporal workaround for an ascii_table. This will be implemented in the future.
-// deno-lint-ignore no-external-import
-import AsciiTable from 'https://deno.land/x/ascii_table@v0.1.0/mod.ts';
+import AsciiTable from './_ascii_table.ts';
 
 /**
  * @description rough range object class with a small helper method.
@@ -19,7 +16,7 @@ class Range {
   }
 
   toString(): string {
-    if (this.from === this.to && this.from === -Infinity) return 'n/a';
+    if (this.from === this.to && this.from === -Infinity) return 'N/A';
     if (this.from === this.to) return '' + this.from;
     return `${this.from}-${this.to}`;
   }
@@ -77,7 +74,7 @@ class FileCoverage {
       }
     }
 
-    return ranges.map((v) => v.toString()).join(',');
+    return ranges.map((v) => v.toString()).join(', ');
   }
 
   parseRawLine(line: string): typeof this {

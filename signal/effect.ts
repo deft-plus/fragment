@@ -17,12 +17,6 @@ export type EffectRef = {
   destroy(): void;
 };
 
-/** Options for creating an effect. */
-export type CreateEffectOptions = {
-  /** Whether the effect can write to signals. */
-  allowSignalWrites?: boolean;
-};
-
 /** Set of all active effects. */
 const activeEffects = new Set<Watch>();
 /** Set of effects scheduled for execution. */
@@ -34,11 +28,8 @@ let pendingQueue: PromiseWithResolvers<void> | null = null;
 /** Create a global effect for the given callback function. */
 export function effect(
   callback: EffectCallback,
-  options: CreateEffectOptions = {},
 ): EffectRef {
-  const { allowSignalWrites = false } = options;
-
-  const watch = new Watch(callback, queueEffect, allowSignalWrites);
+  const watch = new Watch(callback, queueEffect);
   activeEffects.add(watch);
 
   // Schedule the effect to run.

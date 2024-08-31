@@ -7,7 +7,7 @@
  */
 
 import { defaultEquals, markAsSignal, ReadonlySignal, SignalOptions } from '@/signal/_api.ts';
-import { ReactiveNode, setCurrentConsumer } from '@/signal/_graph.ts';
+import { ReactiveNode, setActiveConsumer } from '@/signal/_graph.ts';
 import { untracked } from '@/signal/untracked.ts';
 
 /** Options for creating a memoized signal. */
@@ -70,9 +70,6 @@ class MemoizedSignalImp<T> extends ReactiveNode {
   /** Flag indicating if the value is stale. */
   private stale = true;
 
-  // Disallow writing to the signal.
-  protected override readonly allowSignalWrites = false;
-
   /** Called when a dependency changes. Marks the value as stale and notifies consumers. */
   protected override onDependencyChange(): void {
     if (this.stale) {
@@ -113,7 +110,7 @@ class MemoizedSignalImp<T> extends ReactiveNode {
     this.value = COMPUTING;
 
     this.trackingVersion++;
-    const previousConsumer = setCurrentConsumer(this);
+    const previousConsumer = setActiveConsumer(this);
     let newValue: MemoizedValue<T>;
     try {
       newValue = this.compute();
@@ -121,7 +118,7 @@ class MemoizedSignalImp<T> extends ReactiveNode {
       newValue = ERRORED;
       this.error = err;
     } finally {
-      setCurrentConsumer(previousConsumer);
+      setActiveConsumer(previousConsumer);
     }
 
     this.stale = false;
