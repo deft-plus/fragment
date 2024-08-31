@@ -22,7 +22,7 @@ const NOOP_CLEANUP: CleanupFn = () => {};
  * on an external scheduling function to call `Watch.run()`.
  */
 export class Watch extends ReactiveNode {
-  private isDirty = false;
+  private dirty = false;
   private cleanupFn = NOOP_CLEANUP;
 
   constructor(
@@ -34,18 +34,18 @@ export class Watch extends ReactiveNode {
 
   /** Notify that this watch needs to be re-scheduled. */
   notify(): void {
-    if (!this.isDirty) {
+    if (!this.dirty) {
       this.schedule(this);
     }
 
-    this.isDirty = true;
+    this.dirty = true;
   }
 
   protected override onDependencyChange(): void {
     this.notify();
   }
 
-  protected override updateProducerValueVersion(): void {
+  protected override onProducerMayChanged(): void {
     // Watches don't update producer values.
   }
 
@@ -54,9 +54,9 @@ export class Watch extends ReactiveNode {
    * by the scheduling function when `Watch.notify()` is triggered.
    */
   run(): void {
-    this.isDirty = false;
+    this.dirty = false;
 
-    if (this.trackingVersion !== 0 && !this.checkDependencies()) {
+    if (this.trackingVersion !== 0 && !this.hasDependenciesChanged()) {
       return;
     }
 

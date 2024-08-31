@@ -45,12 +45,7 @@ const ERRORED = Symbol('ERRORED');
 type MemoizedValue<T> = T | typeof UNSET | typeof COMPUTING | typeof ERRORED;
 
 /** A read-only signal with an untracked value method. */
-export type MemoizedSignal<T> = ReadonlySignal<T> & {
-  /**
-   * Returns the value without creating a dependency on the signal.
-   */
-  untracked(): T;
-};
+export type MemoizedSignal<T> = ReadonlySignal<T>;
 
 /** A computation node that derives a value from a reactive expression. */
 class MemoizedSignalImp<T> extends ReactiveNode {
@@ -73,7 +68,7 @@ class MemoizedSignalImp<T> extends ReactiveNode {
   /** Called when a dependency changes. Marks the value as stale and notifies consumers. */
   protected override onDependencyChange(): void {
     if (this.stale) {
-      return; // If already stale, no need to reprocess.
+      return; // If already stale, no need to reprocess. This also allow batching changes.
     }
 
     this.stale = true; // Mark the value as stale.
@@ -81,7 +76,7 @@ class MemoizedSignalImp<T> extends ReactiveNode {
   }
 
   /** Updates the value version if it is stale. Computes a new value if necessary. */
-  protected override updateProducerValueVersion(): void {
+  protected override onProducerMayChanged(): void {
     if (!this.stale) {
       return; // If not stale, no update needed.
     }
@@ -90,7 +85,7 @@ class MemoizedSignalImp<T> extends ReactiveNode {
     if (
       this.value !== UNSET &&
       this.value !== COMPUTING &&
-      !this.checkDependencies()
+      !this.hasDependenciesChanged()
     ) {
       this.stale = false;
       return;
@@ -136,6 +131,7 @@ class MemoizedSignalImp<T> extends ReactiveNode {
 
     this.value = newValue;
     this.valueVersion++;
+    this.options.onChange(this.value as T);
   }
 
   /** Returns the untracked value of the signal. */
@@ -145,7 +141,7 @@ class MemoizedSignalImp<T> extends ReactiveNode {
 
   /** Returns the current value of the signal, updating if necessary. */
   signal(): T {
-    this.updateProducerValueVersion();
+    this.onProducerMayChanged();
     this.recordAccess();
 
     if (this.value === ERRORED) {
