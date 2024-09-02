@@ -8,7 +8,7 @@
 
 import { defaultEquals, markAsSignal, ReadonlySignal, SignalOptions } from '@/signal/_api.ts';
 import { ReactiveNode, setActiveConsumer } from '@/signal/_graph.ts';
-import { untracked } from '@/signal/untracked.ts';
+import { createUntrackedSignal } from '@/signal/untracked.ts';
 
 /** Options for creating a memoized signal. */
 export type MemoizedSignalOptions<T> = SignalOptions<T>;
@@ -136,7 +136,7 @@ class MemoizedSignalImp<T> extends ReactiveNode {
 
   /** Returns the untracked value of the signal. */
   untracked(): T {
-    return untracked(() => this.signal()); // Use untracked utility to access value.
+    return createUntrackedSignal(() => this.signal()); // Use untracked utility to access value.
   }
 
   /** Returns the current value of the signal, updating if necessary. */

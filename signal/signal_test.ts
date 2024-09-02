@@ -18,7 +18,7 @@ type TestingUser = {
   age: number;
 };
 
-describe('signal / signal()', () => {
+describe('signal / createSignal()', () => {
   test('should create a signal with the given initial value', () => {
     const counter = createSignal(0);
 

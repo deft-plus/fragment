@@ -9,7 +9,7 @@
 import { setActiveConsumer } from '@/signal/_graph.ts';
 
 /** Reads the value of a signal without creating a dependency. */
-export function untracked<T>(readFn: () => T): T {
+export function createUntrackedSignal<T>(readFn: () => T): T {
   const previousConsumer = setActiveConsumer(null);
 
   // We are not trying to catch any particular errors here, just making sure that the consumers

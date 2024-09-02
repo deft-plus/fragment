@@ -14,7 +14,7 @@ import {
   type WritableSignal,
 } from '@/signal/_api.ts';
 import { ReactiveNode } from '@/signal/_graph.ts';
-import { untracked } from '@/signal/untracked.ts';
+import { createUntrackedSignal } from '@/signal/untracked.ts';
 
 /** Options for creating a signal. */
 export type SignalCreationOptions<T> = SignalOptions<T>;
@@ -87,7 +87,7 @@ class WritableSignalImpl<T> extends ReactiveNode {
   }
 
   untracked(): T {
-    return untracked(() => this.signal());
+    return createUntrackedSignal(() => this.signal());
   }
 
   signal(): T {

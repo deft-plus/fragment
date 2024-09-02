@@ -13,7 +13,7 @@ import { createMemoSignal, MemoizedSignal } from '@/signal/memo.ts';
 import { createSignal } from '@/signal/signal.ts';
 import { effect } from '@/signal/effect.ts';
 
-describe('signal / memo()', () => {
+describe('signal / createMemoSignal()', () => {
   test('should allow to create a memoized signal', () => {
     const counter = createSignal(0);
     const doubleCounter = createMemoSignal(() => counter() * 2);

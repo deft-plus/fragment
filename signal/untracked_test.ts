@@ -9,18 +9,18 @@
 import { describe, test } from '@std/testing/bdd';
 import { expect } from '@std/expect';
 
-import { untracked } from '@/signal/untracked.ts';
+import { createUntrackedSignal } from '@/signal/untracked.ts';
 import { createSignal } from '@/signal/signal.ts';
 import { effect } from '@/signal/effect.ts';
 
-describe('signal / untracked()', () => {
+describe('signal / createUntrackedSignal()', () => {
   test('should not track changes in untracked blocks', () => {
     const changes: number[] = [];
 
     const counter = createSignal(0);
 
     effect(() => {
-      changes.push(untracked(() => counter()));
+      changes.push(createUntrackedSignal(() => counter()));
     });
 
     counter.set(1);
