@@ -1,8 +1,35 @@
 {
-  "tasks": {},
-  "scopes": {},
-  "imports": {},
-  "exports": {},
+  "name": "@deft-plus/fragment",
+  "version": "0.1.0",
+  "description": "Development platform for building web applications using Typescript and Deno.",
+  "license": "Apache-2.0",
+  "author": "Deft+",
+  "homepage": "https://github.com/deft-plus/fragment",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deft-plus/fragment.git"
+  },
+  "lock": false,
+  "tasks": {
+    "lint": "deno lint && deno fmt --check",
+    "fmt": "deno fmt",
+    // Temporary workaround for absence of a good coverage tool.
+    "test": "rm -rf .coverage && deno test --coverage=.coverage **/*_test.ts && deno run -A scripts/coverage.ts",
+    "test:v": "vitest"
+  },
+  "imports": {
+    "@/signal/": "./signal/",
+    "@std/assert": "jsr:@std/assert@^1.0.3",
+    "@std/async": "jsr:@std/async@^1.0.4",
+    "@std/expect": "jsr:@std/expect@^1.0.1",
+    "@std/fmt": "jsr:@std/fmt@^1.0.1",
+    "@std/path": "jsr:@std/path@^1.0.3",
+    "@std/streams": "jsr:@std/streams@^1.0.3",
+    "@std/testing": "jsr:@std/testing@^1.0.1"
+  },
+  "exports": {
+    "./signal": "./signal/mod.ts"
+  },
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "dom.extras", "deno.ns"],
     "allowJs": false,
@@ -18,16 +45,15 @@
   },
   "fmt": {
     "include": ["./"],
-    "options": {
-      "useTabs": false,
-      "lineWidth": 100,
-      "indentWidth": 2,
-      "singleQuote": true,
-      "proseWrap": "always"
-    }
+    "exclude": [".coverage", ".git", "browser", "**/*.js"],
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "singleQuote": true,
+    "proseWrap": "never"
   },
   "lint": {
-    "exclude": ["node_modules/"],
+    "exclude": [".coverage", ".git", "browser", "**/*.js"],
     "rules": {
       "tags": ["recommended"],
       "include": [
@@ -38,7 +64,8 @@
         "no-eval",
         "no-non-null-assertion",
         "no-non-null-asserted-optional-chain",
-        "no-sparse-arrays"
+        "no-sparse-arrays",
+        "explicit-function-return-type"
       ],
       "exclude": ["no-empty-interface"]
     }

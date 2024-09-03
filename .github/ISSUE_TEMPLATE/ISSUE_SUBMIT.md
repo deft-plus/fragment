@@ -4,7 +4,6 @@ about: Help us to improve by reporting and submitting issues you might find.
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
 <!-- Instructions For Filing an Issue: https://github.com/deft-plus/fragment/blob/latest/CONTRIBUTING.md -->
