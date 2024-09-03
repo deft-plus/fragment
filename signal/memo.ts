@@ -29,6 +29,7 @@ export function createMemoSignal<T>(
 
   return markAsSignal(node.signal.bind(node), {
     untracked: node.untracked.bind(node),
+    toString: node.toString.bind(node),
   });
 }
 
@@ -85,7 +86,7 @@ class MemoizedSignalImp<T> extends ReactiveNode {
     if (
       this.value !== UNSET &&
       this.value !== COMPUTING &&
-      !this.hasDependenciesChanged()
+      !this.haveDependenciesChanged()
     ) {
       this.stale = false;
       return;
@@ -135,12 +136,12 @@ class MemoizedSignalImp<T> extends ReactiveNode {
   }
 
   /** Returns the untracked value of the signal. */
-  untracked(): T {
+  public untracked(): T {
     return createUntrackedSignal(() => this.signal()); // Use untracked utility to access value.
   }
 
   /** Returns the current value of the signal, updating if necessary. */
-  signal(): T {
+  public signal(): T {
     this.onProducerMayChanged();
     this.recordAccess();
 
@@ -149,5 +150,10 @@ class MemoizedSignalImp<T> extends ReactiveNode {
     }
 
     return this.value as T;
+  }
+
+  /** Returns a string representation of the signal. */
+  public toString(): string {
+    return `[MemoSignal: ${JSON.stringify(this.signal())}]`;
   }
 }

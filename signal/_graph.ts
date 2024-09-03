@@ -54,13 +54,13 @@ export abstract class ReactiveNode {
   protected valueVersion = 0;
 
   /** Called when a dependency may have changed. */
-  protected onDependencyChange(): void {}
+  protected abstract onDependencyChange(): void;
 
   /** Called when a consumer checks if the producer's value has changed. */
-  protected onProducerMayChanged(): void {}
+  protected abstract onProducerMayChanged(): void;
 
   /** Checks if any of this node's dependencies have actually changed. */
-  protected hasDependenciesChanged(): boolean {
+  protected haveDependenciesChanged(): boolean {
     for (const [producerId, dependency] of this.producers) {
       const producer = dependency.producerRef.deref();
 
@@ -71,7 +71,7 @@ export abstract class ReactiveNode {
         continue;
       }
 
-      if (producer.checkValueChanged(dependency.producerVersion)) {
+      if (producer.haveValueChanged(dependency.producerVersion)) {
         return true;
       }
     }
@@ -131,7 +131,7 @@ export abstract class ReactiveNode {
   }
 
   /** Checks if the producer's value has changed compared to the last recorded version. */
-  private checkValueChanged(lastSeenVersion: number): boolean {
+  private haveValueChanged(lastSeenVersion: number): boolean {
     if (this.valueVersion !== lastSeenVersion) {
       return true;
     }

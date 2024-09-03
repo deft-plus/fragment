@@ -32,15 +32,6 @@ export class Watch extends ReactiveNode {
     super();
   }
 
-  /** Notify that this watch needs to be re-scheduled. */
-  notify(): void {
-    if (!this.dirty) {
-      this.schedule(this);
-    }
-
-    this.dirty = true;
-  }
-
   protected override onDependencyChange(): void {
     this.notify();
   }
@@ -49,14 +40,23 @@ export class Watch extends ReactiveNode {
     // Watches don't update producer values.
   }
 
+  /** Notify that this watch needs to be re-scheduled. */
+  public notify(): void {
+    if (!this.dirty) {
+      this.schedule(this);
+    }
+
+    this.dirty = true;
+  }
+
   /**
    * Executes the reactive expression within the context of this `Watch` instance. Should be called
    * by the scheduling function when `Watch.notify()` is triggered.
    */
-  run(): void {
+  public run(): void {
     this.dirty = false;
 
-    if (this.trackingVersion !== 0 && !this.hasDependenciesChanged()) {
+    if (this.trackingVersion !== 0 && !this.haveDependenciesChanged()) {
       return;
     }
 
@@ -71,7 +71,7 @@ export class Watch extends ReactiveNode {
   }
 
   /** Run the cleanup function. */
-  cleanup(): void {
+  public cleanup(): void {
     this.cleanupFn();
   }
 }

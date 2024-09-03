@@ -165,4 +165,9 @@ describe('signal / createSignal()', () => {
 
     expect(changes).toStrictEqual([]);
   });
+
+  test('should have a toString implementation', () => {
+    const counter = createSignal(1);
+    expect(counter + '').toBe('[Signal: 1]');
+  });
 });

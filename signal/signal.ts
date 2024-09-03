@@ -39,6 +39,7 @@ export function createSignal<T>(
     mutate: node.mutate.bind(node),
     readonly: node.readonly.bind(node),
     untracked: node.untracked.bind(node),
+    toString: node.toString.bind(node),
   });
 }
 
@@ -54,7 +55,7 @@ class WritableSignalImpl<T> extends ReactiveNode {
   }
 
   /** Set a new value for the signal and notify consumers if changed. */
-  set(newValue: T): void {
+  public set(newValue: T): void {
     if (!this.options.equal(this.value, newValue)) {
       this.value = newValue;
       this.valueVersion++;
@@ -63,20 +64,29 @@ class WritableSignalImpl<T> extends ReactiveNode {
     }
   }
 
+  protected override onDependencyChange(): void {
+    // Writable signals are not consumers, so this doesn't apply.
+  }
+
+  protected override onProducerMayChanged(): void {
+    // Value versions are always up-to-date for writable signals.
+  }
+
   /** Update the signal's value using the provided function. */
-  update(updater: (value: T) => T): void {
+  public update(updater: (value: T) => T): void {
     this.set(updater(this.value));
   }
 
   /** Apply a function to mutate the signal's value in-place. */
-  mutate(mutator: (value: T) => void): void {
+  public mutate(mutator: (value: T) => void): void {
     mutator(this.value);
     this.valueVersion++;
     this.notifyConsumers();
     this.options.onChange?.(this.value);
   }
 
-  readonly(): ReadonlySignal<T> {
+  /** Returns a read-only signal derived from this signal. */
+  public readonly(): ReadonlySignal<T> {
     if (!this.readonlySignal) {
       this.readonlySignal = markAsSignal<ReadonlySignal<T>>(() => this.signal(), {
         untracked: () => this.untracked(),
@@ -86,12 +96,19 @@ class WritableSignalImpl<T> extends ReactiveNode {
     return this.readonlySignal;
   }
 
-  untracked(): T {
+  /** Returns an untracked signal derived from this signal. */
+  public untracked(): T {
     return createUntrackedSignal(() => this.signal());
   }
 
-  signal(): T {
+  /** Returns the current value of the signal. */
+  public signal(): T {
     this.recordAccess();
     return this.value;
+  }
+
+  /** Returns a string representation of the signal. */
+  public toString(): string {
+    return `[Signal: ${JSON.stringify(this.signal())}]`;
   }
 }

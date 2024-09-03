@@ -109,7 +109,13 @@ describe('signal / createMemoSignal()', () => {
     const counter = createSignal(0);
     const counter2 = createSignal(0);
 
-    const doubleCounter = createMemoSignal(() => counter() * 2 + counter2());
+    const changes = [] as number[];
+
+    const doubleCounter = createMemoSignal(() => {
+      const value = counter() * 2 + counter2();
+      changes.push(value);
+      return value;
+    });
 
     expect(doubleCounter()).toBe(0);
 
@@ -117,6 +123,7 @@ describe('signal / createMemoSignal()', () => {
     counter2.set(2);
 
     expect(doubleCounter()).toBe(4);
+    expect(changes).toStrictEqual([0, 4]);
   });
 
   test('should throw if it having a circular dependency', () => {
@@ -178,5 +185,63 @@ describe('signal / createMemoSignal()', () => {
     counter2.set(13);
 
     expect(doubleCounter()).toBe(20);
+  });
+
+  test('should cache exceptions thrown until computed gets dirty again', () => {
+    const counter = createSignal(0);
+    const errorCounter = createMemoSignal(() => {
+      if (counter() === 0) {
+        throw new Error('Counter is zero');
+      }
+
+      return counter();
+    });
+
+    expect(() => errorCounter()).toThrow('Counter is zero');
+
+    counter.set(1);
+
+    expect(errorCounter()).toBe(1);
+  });
+
+  test("should not update dependencies of computations when dependencies don't change", () => {
+    const source = createSignal(0);
+    const isEven = createMemoSignal(() => source() % 2 === 0);
+    let updateCounter = 0;
+    const updateTracker = createMemoSignal(() => {
+      isEven();
+      return updateCounter++;
+    });
+
+    updateTracker();
+    expect(updateCounter).toEqual(1);
+
+    source.set(1);
+    updateTracker();
+    expect(updateCounter).toEqual(2);
+
+    // Setting the counter to another odd value should not trigger `updateTracker` to update.
+    source.set(3);
+    updateTracker();
+    expect(updateCounter).toEqual(2);
+
+    source.set(4);
+    updateTracker();
+    expect(updateCounter).toEqual(3);
+  });
+
+  test('should allow signal creation within computed', () => {
+    const doubleCounter = createMemoSignal(() => {
+      const counter = createSignal(1);
+      return counter() * 2;
+    });
+
+    expect(doubleCounter()).toBe(2);
+  });
+
+  test('should have a toString implementation', () => {
+    const counter = createSignal(1);
+    const doubleCounter = createMemoSignal(() => counter() * 2);
+    expect(doubleCounter + '').toBe('[MemoSignal: 2]');
   });
 });
