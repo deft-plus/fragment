@@ -85,15 +85,11 @@ function isConfiguredValue(value: unknown): value is ConfiguredValue {
 /** Utility type to define a configured value. */
 type ConfiguredValue<T = unknown> =
   | (SignalOptions<T> & {
-    /**
-     * Initial value of the signal.
-     */
+    /** Initial value of the signal.*/
     value: T;
   })
   | (MemoizedSignalOptions<T> & {
-    /**
-     * Initial value of the signal.
-     */
+    /** Initial value of the signal. */
     value: () => T;
   });
 
