@@ -17,6 +17,8 @@ describe('store / store()', () => {
     increment: () => void;
     decrement: () => void;
     reset: () => void;
+    doubleCount: number;
+    name: string;
   };
 
   const counterStore = store<CounterStore>(({ get }) => ({
@@ -24,9 +26,15 @@ describe('store / store()', () => {
     increment: () => get().count.update((count) => count + 1),
     decrement: () => get().count.update((count) => count - 1),
     reset: () => get().count.set(0),
+    doubleCount: {
+      value: () => get().count() * 2,
+    },
+    name: {
+      value: 'Counter',
+    },
   }));
 
-  test('should create basic store and access values and actions', () => {
+  test('should create basic store and access values, actions and computed values', () => {
     const counter = counterStore();
 
     expect(counter.count()).toBe(0);
@@ -40,9 +48,39 @@ describe('store / store()', () => {
     counter.increment();
     counter.increment();
     expect(counter.count()).toBe(2);
+    expect(counter.doubleCount()).toBe(4);
 
     counter.reset();
     expect(counter.count()).toBe(0);
+
+    expect(counter.name()).toBe('Counter');
+  });
+
+  test('should allow to configure signals', () => {
+    const changes: number[] = [];
+
+    const configuredCounterStore = store<CounterStore>(({ get }) => ({
+      name: 'Counter',
+      count: {
+        value: 0,
+        id: 'count',
+        log: true,
+        equal: (a, b) => a === b,
+        onChange: (value) => changes.push(value),
+      },
+      increment: () => get().count.update((count) => count + 1),
+      decrement: () => get().count.update((count) => count - 1),
+      reset: () => get().count.set(0),
+      doubleCount: { value: () => get().count() * 2 },
+    }));
+
+    const counter = configuredCounterStore();
+
+    counter.increment();
+    counter.increment();
+    counter.increment();
+
+    expect(changes).toStrictEqual([1, 2, 3]);
   });
 
   test('should allow using the selector to access specific store values and actions', () => {
@@ -58,7 +96,7 @@ describe('store / store()', () => {
     expect(count()).toBe(2);
   });
 
-  test('should allow to use promises and derrived values', async () => {
+  test('should allow to use promises', async () => {
     type User = {
       uid: string;
       username: string;

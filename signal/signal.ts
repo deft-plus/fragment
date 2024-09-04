@@ -54,6 +54,14 @@ class WritableSignalImpl<T> extends ReactiveNode {
     super();
   }
 
+  protected override onDependencyChange(): void {
+    // Writable signals are not consumers, so this doesn't apply.
+  }
+
+  protected override onProducerMayChanged(): void {
+    // Value versions are always up-to-date for writable signals.
+  }
+
   /** Set a new value for the signal and notify consumers if changed. */
   public set(newValue: T): void {
     if (!this.options.equal(this.value, newValue)) {
@@ -62,14 +70,6 @@ class WritableSignalImpl<T> extends ReactiveNode {
       this.notifyConsumers();
       this.options.onChange?.(this.value);
     }
-  }
-
-  protected override onDependencyChange(): void {
-    // Writable signals are not consumers, so this doesn't apply.
-  }
-
-  protected override onProducerMayChanged(): void {
-    // Value versions are always up-to-date for writable signals.
   }
 
   /** Update the signal's value using the provided function. */

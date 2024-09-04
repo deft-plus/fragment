@@ -6,17 +6,12 @@
  * found in the LICENSE file at https://github.com/deft-plus/fragment.js/blob/latest/LICENCE
  */
 
-/// Stores are a way to manage global state in your application. They use signals internally to
-/// store values and update them. You can also derive values from other values.
-///
-/// The reason why stores are immutable is because they are not meant to be changed directly, but
-/// rather through the actions that are defined in the store.
-///
-/// You would want to use a store over a signal when you need to store multiple values that are
-/// related to each other. This makes it easier to manage the state of your application with a
-/// single source of truth.
-
-import { type ReadonlySignal, signal, type WritableSignal } from '@/signal/mod.ts';
+import {
+  type ReadonlySignal,
+  signal,
+  type SignalOptions,
+  type WritableSignal,
+} from '@/signal/mod.ts';
 
 /**
  * Creates a reactive atomic piece of state (store) that can be read through signals and written
@@ -25,12 +20,11 @@ import { type ReadonlySignal, signal, type WritableSignal } from '@/signal/mod.t
 export const store = <T extends ValidStore>(initializeStoreValues: StoreValues<T>): Store<T> => {
   const __id__ = `store_${Math.random().toString(36).slice(2)}`;
 
-  let state = undefined as unknown as WritableState<T>;
-  const initialState = initializeStoreValues({ get: () => state });
-
-  const stateEntries = Object.entries(initialState);
   const mutableState = { __id__ } as ValidStore;
   const immutableState = { __id__ } as ValidStore;
+  const initialState = initializeStoreValues({ get: () => mutableState as WritableState<T> });
+
+  const stateEntries = Object.entries(initialState);
 
   for (let index = 0; index < stateEntries.length; index++) {
     const [stateKey, stateValue] = stateEntries[index];
@@ -43,12 +37,27 @@ export const store = <T extends ValidStore>(initializeStoreValues: StoreValues<T
     }
 
     // If the value is not a function, it's a signal.
-    const valueSignal = signal(stateValue);
-    mutableState[stateKey] = valueSignal;
-    immutableState[stateKey] = valueSignal.readonly();
-  }
+    const isConfigured = isConfiguredValue(stateValue);
+    const signalValue = (isConfigured ? stateValue.value : stateValue) as T | (() => T);
+    const isComputed = typeof signalValue === 'function';
 
-  state = mutableState as WritableState<T>;
+    const signalConfig = {
+      ...(isConfigured && stateValue.id && { id: stateValue.id }),
+      ...(isConfigured && stateValue.log && { log: stateValue.log }),
+      ...(isConfigured && stateValue.equal && { equal: stateValue.equal }),
+      ...(isConfigured && stateValue.onChange && { onChange: stateValue.onChange }),
+    } as SignalOptions<T>;
+
+    const valueSignal = isComputed
+      ? signal.memo(signalValue, signalConfig)
+      : signal(signalValue, signalConfig);
+
+    mutableState[stateKey] = valueSignal;
+    immutableState[stateKey] =
+      'readonly' in valueSignal && typeof valueSignal.readonly === 'function'
+        ? valueSignal.readonly()
+        : valueSignal;
+  }
 
   /** Function to use the store */
   function useStore<U extends (keyof T)>(): ReadonlyState<T>[U];
@@ -60,6 +69,22 @@ export const store = <T extends ValidStore>(initializeStoreValues: StoreValues<T
   }
 
   return useStore;
+};
+
+function isConfiguredValue(value: unknown): value is ComputedValue {
+  return typeof value !== 'undefined' &&
+    value !== null &&
+    typeof value === 'object' &&
+    'value' in value;
+}
+
+/** Utility type to define a computed value. */
+type ComputedValue<T = unknown> = SignalOptions<T> & {
+  /**
+   * The value of the computed value. You can use a function to compute the value or a single value
+   * to use as the initial value for a signal.
+   */
+  value: T | (() => T);
 };
 
 /** Utility type to check if a value is a valid store. */
@@ -95,7 +120,13 @@ export type StoreValues<T extends ValidStore> = (values: {
    * created or not. Therefore, the typings enforce that the state must be non-nullable.
    */
   get: () => WritableState<T>;
-}) => T;
+}) => {
+  [K in keyof T]: T[K] extends (...args: infer Args) => infer R
+    // Functions as actions.
+    ? (...args: Args) => R
+    // Values as signals or computed values.
+    : T[K] | ComputedValue<T[K]>;
+};
 
 /**
  * A store is a function that returns an atomic and encapsulated state. It can be read through
