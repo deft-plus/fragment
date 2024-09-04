@@ -49,10 +49,12 @@ export const store = <T extends ValidStore>(initializeStoreValues: StoreValues<T
       ...(isConfigured && stateValue.onChange && { onChange: stateValue.onChange }),
     } as SignalOptions<T>;
 
+    // Value assignment to a memoized or normal signal.
     const valueSignal = isComputed
       ? signal.memo(signalValue, signalConfig)
       : signal(signalValue, signalConfig);
 
+    // Value assignment to the mutable and immutable state.
     mutableState[stateKey] = valueSignal;
     immutableState[stateKey] =
       'readonly' in valueSignal && typeof valueSignal.readonly === 'function'
@@ -72,6 +74,7 @@ export const store = <T extends ValidStore>(initializeStoreValues: StoreValues<T
   return useStore;
 };
 
+/** Utility function to check if a value is a configured value. */
 function isConfiguredValue(value: unknown): value is ConfiguredValue {
   return typeof value !== 'undefined' &&
     value !== null &&
