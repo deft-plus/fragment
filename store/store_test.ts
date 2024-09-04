@@ -107,18 +107,18 @@ describe('store / store()', () => {
 
     const UserService = {
       create: async (username: string, password: string) => {
-        await delay(10);
+        await delay(5);
         const user = { uid: `${mockedUsers.length + 1}`, username, password };
         mockedUsers.push(user);
         return user;
       },
       read: async (username: string) => {
-        await delay(10);
+        await delay(5);
         const user = mockedUsers.find((user) => user.username === username);
         return user ?? null;
       },
       update: async (uid: string, username: string, password: string) => {
-        await delay(10);
+        await delay(5);
         const user = mockedUsers.find((user) => user.uid === uid);
         if (user) {
           user.username = username;
@@ -127,7 +127,7 @@ describe('store / store()', () => {
         return user ?? null;
       },
       delete: async (uid: string) => {
-        await delay(10);
+        await delay(5);
         const user = mockedUsers.find((user) => user.uid === uid);
         if (user) {
           mockedUsers.splice(mockedUsers.indexOf(user), 1);
@@ -157,7 +157,7 @@ describe('store / store()', () => {
         return userSignedIn;
       },
       signOut: async () => {
-        await delay(10);
+        await delay(5);
         get().user.set(null);
         return true;
       },
