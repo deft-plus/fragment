@@ -4,10 +4,10 @@ Fragment is a development platform for building web applications using Typescrip
 
 ## Modules
 
-| Module                     | Description                               |
-| -------------------------- | ----------------------------------------- |
-| [`signal`](modules/signal) | Reactive values.                          |
-| [`store`](modules/store)   | Encapsulated and atomic state management. |
+| Module             | Description                               |
+| ------------------ | ----------------------------------------- |
+| [`signal`](signal) | Reactive values.                          |
+| [`store`](store)   | Encapsulated and atomic state management. |
 
 ## Author
 
