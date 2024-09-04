@@ -9,7 +9,7 @@
 import { describe, test } from '@std/testing/bdd';
 import { expect } from '@std/expect';
 import { delay } from '@std/async/delay';
-import { store } from '@/store/mod.ts';
+import { store } from '@/store/store.ts';
 
 describe('store / store()', () => {
   type CounterStore = {
