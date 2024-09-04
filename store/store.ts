@@ -7,6 +7,7 @@
  */
 
 import {
+  type MemoizedSignalOptions,
   type ReadonlySignal,
   signal,
   type SignalOptions,
@@ -71,21 +72,27 @@ export const store = <T extends ValidStore>(initializeStoreValues: StoreValues<T
   return useStore;
 };
 
-function isConfiguredValue(value: unknown): value is ComputedValue {
+function isConfiguredValue(value: unknown): value is ConfiguredValue {
   return typeof value !== 'undefined' &&
     value !== null &&
     typeof value === 'object' &&
     'value' in value;
 }
 
-/** Utility type to define a computed value. */
-type ComputedValue<T = unknown> = SignalOptions<T> & {
-  /**
-   * The value of the computed value. You can use a function to compute the value or a single value
-   * to use as the initial value for a signal.
-   */
-  value: T | (() => T);
-};
+/** Utility type to define a configured value. */
+type ConfiguredValue<T = unknown> =
+  | (SignalOptions<T> & {
+    /**
+     * Initial value of the signal.
+     */
+    value: T;
+  })
+  | (MemoizedSignalOptions<T> & {
+    /**
+     * Initial value of the signal.
+     */
+    value: () => T;
+  });
 
 /** Utility type to check if a value is a valid store. */
 type ValidStore = Record<PropertyKey, unknown>;
@@ -114,10 +121,9 @@ export type StoreValues<T extends ValidStore> = (values: {
   /**
    * Returns the current state of the store.
    *
-   * `WritableState<T>` cannot be nullable, but it is initially undefined when the store is created.
-   * This is because the state has not been created yet. Even if it could be undefined, it would be
-   * inconvenient to use because you would constantly need to check whether the state has been
-   * created or not. Therefore, the typings enforce that the state must be non-nullable.
+   * `WritableState<T>` cannot be nullable, However, it's initially undefined when the store is
+   * created because the state isn't yet initialized. This ensures that the state is always
+   * accessible without needing constant null checks.
    */
   get: () => WritableState<T>;
 }) => {
@@ -125,7 +131,7 @@ export type StoreValues<T extends ValidStore> = (values: {
     // Functions as actions.
     ? (...args: Args) => R
     // Values as signals or computed values.
-    : T[K] | ComputedValue<T[K]>;
+    : T[K] | ConfiguredValue<T[K]>;
 };
 
 /**

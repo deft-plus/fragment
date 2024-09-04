@@ -19,6 +19,8 @@ export {
   type WritableSignal,
 } from '@/signal/_api.ts';
 
+export { type MemoizedSignalOptions } from '@/signal/memo.ts';
+
 /** Function to create a signal. */
 export const signal: SignalFactory = Object.assign(createSignal, {
   isSignal,

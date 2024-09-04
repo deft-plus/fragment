@@ -1,21 +1,23 @@
 # `@fragment/store`
 
-This module provides the `store` function, which creates an atomic and encapsulated store to manage state in a functional way with minimal boilerplate.
+The `@fragment/store` module provides a simple yet powerful way to manage global state in your application with minimal boilerplate. It leverages signals for reactive state management and ensures that your state is encapsulated, immutable, and easy to work with in a functional programming style.
 
-Stores are a way to manage global state in your application. They use signals internally to store values and update them. You can also derive values from other values.
+## Why Use `store`?
 
-The reason why stores are immutable is because they are not meant to be changed directly, but rather through the actions that are defined in the store.
+- **Encapsulation**: Stores encapsulate state and logic, keeping your application organized and maintainable.
+- **Atomic Updates**: Stores ensure that state updates are atomic, preventing unintended side effects.
+- **Derived Values**: Easily compute values based on existing state without redundant calculations.
+- **Immutability**: Stores enforce immutability, meaning state cannot be directly mutated, reducing bugs.
 
-You would want to use a store over a signal when you need to store multiple values that are related to each other. This makes it easier to manage the state of your application with a single source of truth.
+Use a store when you need to manage multiple related values, ensuring a single source of truth for your application's state.
 
-## Basics
+## Getting Started
 
-A store is an object with values and actions. It encapsulates state and provides a way to update it atomically. Stores are based off signals and use them for values and updates internally.
+A store is an object containing values and actions. It uses signals internally to store and update values.
 
-Example:
+### Example
 
 ```typescript
-// Values are considered signals and functions are considered actions.
 type CounterStore = {
   count: number;
   increment: () => void;
@@ -23,7 +25,6 @@ type CounterStore = {
   reset: () => void;
 };
 
-// Store creation.
 const counterStore = store<CounterStore>(({ get }) => ({
   count: 0,
   increment: () => get().count.update((count) => count + 1),
@@ -31,32 +32,26 @@ const counterStore = store<CounterStore>(({ get }) => ({
   reset: () => get().count.set(0),
 }));
 
-// Accessing store values.
 console.log(counterStore.count()); // 0
 
-// Accessing store actions.
 counterStore.increment();
 console.log(counterStore.count()); // 1
 
-// Values are readonly signals to keep the store atomic.
-counterStore.count.set(2); // Error: Property 'set' does not exist on type '() => number'.
+// Uncommenting the next line will result in an error because direct mutation is not allowed.
+// counterStore.count.set(2); // Error: Property 'set' does not exist on type '() => number'.
 ```
 
-## `get` Function
+## How `get` Works
 
-The `get` function is used to access store values and actions. It returns a proxy object that automatically wraps values in signals and actions in functions.
+The `get` function is your gateway to accessing store values and actions. It returns the current state of the store.
 
-> **Note:**
->
-> The `get` function returns a `WritableState<T>` and this cannot be nullable, but it is initially undefined when the store is created.
->
-> This is because the state has not been created yet. Even if it could be undefined, it would be inconvenient to use because you would constantly need to check whether the state has been created or not. Therefore, the typings enforce that the state must be non-nullable.
+> **Note**: The `get` function returns a `WritableState<T>`, which is non-nullable. However, it's initially undefined when the store is created because the state isn't yet initialized. This ensures that the state is always accessible without needing constant null checks.
 
-## Derrived Values
+## Configure Signals
 
-You can derive values from other values in the store. This is useful when you need to compute a value based on other values in the store.
+Instead of the default signal configuration, you can customize signals to suit your needs. This also allows you to create derived values that are automatically memoized.
 
-Example:
+### Example
 
 ```typescript
 type CounterStore = {
@@ -68,9 +63,9 @@ type CounterStore = {
 const counterStore = store<CounterStore>(({ get }) => ({
   count: 0,
   double: {
-    value: () => get().count() * 2, // If function is used, it will be memoized or if a value is used, it will be a signal.
-    // You can configure the signal here...
-  }
+    value: () => get().count() * 2, // Automatically memoized if a function is used.
+    // You can configure the signal here if needed.
+  },
   increment: () => get().count.update((count) => count + 1),
 }));
 
@@ -78,3 +73,5 @@ console.log(counterStore.double()); // 0
 counterStore.increment();
 console.log(counterStore.double()); // 2
 ```
+
+With `@fragment/store`, you can build complex, reactive state management with ease while ensuring your application remains efficient and maintainable.
