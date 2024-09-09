@@ -11,7 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 
 - `reactive` module was added with `signal` and `store` modules.
-- Script to bump version and generate changelog.
+- Workflow to publish on release.
+- Workflow to lint PR title.
 
 ### Changed
 
