@@ -25,6 +25,7 @@ jobs:
             deprecation
             [unstable] deprecation
             feat
+            release
             fix
             docs
             refactor
@@ -33,6 +34,11 @@ jobs:
             ci
             chore
             revert
+          subjectPattern: '^[A-Z].+$'
+          subjectPatternError: |
+            The subject "{subject}" in the pull request title "{title}"
+            must start with an uppercase letter.
+          requireScope: true
           # This should be kept up-to-date with the current packages list
           scopes: |
             reactive(/unstable)?
