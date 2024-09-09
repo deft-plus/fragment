@@ -1,6 +1,48 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 // This module is browser compatible.
 
+/**
+ * Contains the implementation for the {@link store} function.
+ *
+ * A store is a reactive atomic piece of state that can be read through signals and written through
+ * actions. This function creates a store that can be used to read and write the state.
+ *
+ * @example Usage
+ * ```ts
+ * const counterStore = store(({ get }) => ({
+ *   counter: 0,
+ *   increment: () => get().counter++,
+ *   decrement: () => get().counter--,
+ * }));
+ *
+ * const counterValues = counterStore();
+ *
+ * console.log(counterValues.counter()); // Logs: "0".
+ *
+ * counterValues.increment();
+ *
+ * console.log(counterValues.counter()); // Logs: "1".
+ * ```
+ *
+ * @example Usage with selector
+ * ```ts
+ * const counterStore = store(({ get }) => ({
+ *   counter: 0,
+ *   increment: () => get().counter++,
+ *   decrement: () => get().counter--,
+ * }));
+ *
+ * const counter = counterStore('counter');
+ * const increment = counterStore('increment');
+ *
+ * console.log(counter()); // Logs: "0".
+ *
+ * increment();
+ *
+ * console.log(counter()); // Logs: "1".
+ * ```
+ */
+
 import {
   isSignal,
   type MemoizedSignalOptions,

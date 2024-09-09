@@ -1,16 +1,20 @@
 # `@fragment/reactive`
 
-This module provides the `signal` function for creating reactive values. Signals notify consumers when their value changes.
+The `@fragment/reactive` module combines the power of reactive signals and stores to manage both individual reactive values and global state in your application. With this module, you can create reactive values (signals), manage derived values, and encapsulate state in stores, all with minimal boilerplate and a functional programming style.
 
-## Basics
+## Signals
+
+Signals provide a way to create reactive values that automatically notify consumers when their value changes. They allow for fine-grained reactivity and lazy evaluation, making them ideal for performance-sensitive applications.
+
+### Basics
 
 A signal is a function (`() => T`) that returns its current value. It doesn't trigger side effects but may recompute values lazily.
 
 **Reactive Contexts:** When a signal is accessed in a reactive context, it registers as a dependency. The context updates when any signal it depends on changes.
 
-## Writable Signals
+### Writable Signals
 
-Use `signal()` to create a `WritableSignal`. It supports:
+Use `signal()` to create a `WritableSignal`. Writable signals allow updating their value using:
 
 - `.set(value)`: Update the signal's value.
 - `.update(func)`: Update using a function.
@@ -28,9 +32,9 @@ counter.mutate((list) => list.push({ title: 'New Task' }));
 
 **Equality Comparator:** Optionally, provide a function to compare new and old values to prevent unnecessary updates.
 
-## Read-Only Signals
+### Read-Only Signals
 
-Use `signal(value).readonly()` to create a read-only signal. It doesn't support updating the value.
+Create a read-only signal with `signal(value).readonly()`. It restricts mutation and only allows access to the value.
 
 Example:
 
@@ -38,113 +42,80 @@ Example:
 const counter = signal(0).readonly();
 ```
 
-## Computed Values
+### Memoized Signals
 
-We can create new expressions that depend on signals by wrapping a signal in a function (`() => signal`). When a signal changes, it updates the dependent function.
-
-Example:
-
-```typescript
-const counter = signal(0);
-const isEven = () => counter() % 2 === 0;
-```
-
-## Memoized Signals
-
-Use `signal.memo()` for memoized signals that automatically update based on dependencies.
+Use `memoSignal()` to create memoized signals that automatically update based on dependencies.
 
 Example:
 
 ```typescript
-const isEven = signal.memo(() => counter() % 2 === 0);
+const isEven = memoSignal(() => counter() % 2 === 0);
 ```
 
-You can also configure the memoized signal with an equality comparator to prevent unnecessary updates. Or pass an onChange callback to run when the value changes.
+Memoized signals can be configured with an equality comparator to prevent unnecessary updates and an `onChange` callback to run when the value changes.
+
+### Promised Signals
+
+`signalFromPromise()` creates signals that represent asynchronous values. The signal resolves to a promise and exposes a `status` property.
+
+Example:
 
 ```typescript
-const isEven = signal.memo(
-  () => counter() % 2 === 0,
-  {
-    equals: (prev, next) => prev === next,
-    onChange: (value) => console.log('Changed:', value),
-  },
-);
-```
-
-## Promised Signals
-
-The `signal.promise()` function creates a signal that resolves to a promise. It has a `status` property that indicates the promise state.
-
-```typescript
-const data = signal.promise(async () => {
+// Function parameter.
+const data = signalFromPromise(async () => {
   const response = await fetch('https://api.example.com/data');
   return response.json();
 });
 
-// Check every second for the data status
-setInterval(() => {
-  if (data().status === 'pending') {
-    console.log('Loading...');
-  }
-
-  if (data().status === 'fulfilled') {
-    console.log('Data:', data().value);
-  }
-
-  console.error('Error:', data().error);
-}, 1000);
+// Promise parameter.
+const data = signalFromPromise(
+  fetch('https://api.example.com/data')
+    .then((response) => response.json()),
+);
 ```
 
-## Effects
+### Effects
 
-`signal.effect()` schedules a function to run when signals it depends on change and returns a ref object. You can also provide a cleanup function to run before the effect is re-run.
+`effect()` registers side effects that run whenever the signals they depend on change. Effects can be cleaned up by returning a cleanup function.
 
 Example:
 
 ```typescript
 const counter = signal(0);
-const effectRef = signal.effect(() => {
+
+effect(() => {
   console.log('Counter:', counter());
   return () => console.log('Cleanup');
 });
 
-counter.set(1);
-effectRef.destroy();
-```
-
-## Untracked Values
-
-Use `signal.untrack()` to create a signal that doesn't trigger reactivity when accessed in a reactive context.
-
-Example:
-
-```typescript
-const counter = signal(0);
-const untrackedValue = counter.untrack();
-
-signal.effect(() => {
-  console.log('Untracked:', counter.untrack());
+// Run effect immediately.
+effect.initial(() => {
+  console.log('Counter:', counter());
 });
 ```
 
-# `@fragment/store`
+### Untracked Signals
 
-The `@fragment/store` module provides a simple yet powerful way to manage global state in your application with minimal boilerplate. It leverages signals for reactive state management and ensures that your state is encapsulated, immutable, and easy to work with in a functional programming style.
+Use `signal.untrack()` to access a signal's value without registering it as a dependency in a reactive context.
 
-## Why Use `store`?
+---
 
-- **Encapsulation**: Stores encapsulate state and logic, keeping your application organized and maintainable.
-- **Atomic Updates**: Stores ensure that state updates are atomic, preventing unintended side effects.
-- **Derived Values**: Easily compute values based on existing state without redundant calculations.
-- **Immutability**: Stores enforce immutability, meaning state cannot be directly mutated, reducing bugs.
+## Stores
 
-Use a store when you need to manage multiple related values, ensuring a single source of truth for your application's state.
+Stores allow you to manage multiple reactive values in a cohesive, encapsulated structure. They are ideal for managing global or complex state, ensuring atomic updates and immutability.
 
-## Getting Started
+### Why Use Stores?
 
-A store is an object containing values and actions. It uses signals internally to store and update values.
+- **Encapsulation**: Keep state and logic organized.
+- **Atomic Updates**: Prevent unintended side effects.
+- **Derived Values**: Easily compute values based on existing state.
+- **Immutability**: Ensure state cannot be directly mutated, reducing bugs.
 
-### Example
+### Creating a Store
+
+A store is an object containing signals and actions. It leverages signals internally to manage and update state reactively.
+
+Example:
 
 ```typescript
 type CounterStore = {
@@ -162,25 +133,15 @@ const counterStore = store<CounterStore>(({ get }) => ({
 }));
 
 console.log(counterStore.count()); // 0
-
 counterStore.increment();
 console.log(counterStore.count()); // 1
-
-// Uncommenting the next line will result in an error because direct mutation is not allowed.
-// counterStore.count.set(2); // Error: Property 'set' does not exist on type '() => number'.
 ```
 
-## How `get` Works
+### Working with Derived Values
 
-The `get` function is your gateway to accessing store values and actions. It returns the current state of the store.
+Stores can include derived values that depend on other signals. These derived values are memoized and update automatically.
 
-> **Note**: The `get` function returns a `WritableState<T>`, which is non-nullable. However, it's initially undefined when the store is created because the state isn't yet initialized. This ensures that the state is always accessible without needing constant null checks.
-
-## Configure Signals
-
-Instead of the default signal configuration, you can customize signals to suit your needs. This also allows you to create derived values that are automatically memoized.
-
-### Example
+Example:
 
 ```typescript
 type CounterStore = {
@@ -192,8 +153,7 @@ type CounterStore = {
 const counterStore = store<CounterStore>(({ get }) => ({
   count: 0,
   double: {
-    value: () => get().count() * 2, // Automatically memoized if a function is used.
-    // You can configure the signal here if needed.
+    value: () => get().count() * 2,
   },
   increment: () => get().count.update((count) => count + 1),
 }));
@@ -203,4 +163,14 @@ counterStore.increment();
 console.log(counterStore.double()); // 2
 ```
 
-With `@fragment/store`, you can build complex, reactive state management with ease while ensuring your application remains efficient and maintainable.
+### Accessing Store State
+
+The `get` function provides access to the store's internal signals and actions. Use it to retrieve the current state and trigger updates.
+
+> **Note:** `get` ensures non-nullable access to the store's state, avoiding constant null checks.
+
+---
+
+## Summary
+
+`@fragment/reactive` unifies signals and stores, providing a flexible, efficient way to manage both individual reactive values and global state. With signals, you get fine-grained reactivity and lazy evaluation. With stores, you encapsulate state and logic, making it easy to maintain complex state while ensuring immutability and performance.
