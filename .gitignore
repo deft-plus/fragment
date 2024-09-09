@@ -3,6 +3,7 @@
 # Deno
 deno.lock
 .coverage
+.deno-docs
 
 # misc
 .DS_Store

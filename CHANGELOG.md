@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.0.3] - 2024-09-09
+
+`signal` and `store` module were merged into a single module called `reactive`.
+
+### Added
+
+- `reactive` module was added with `signal` and `store` modules.
+- Workflow to publish on release.
+- Workflow to lint PR title.
+
+### Changed
+
+- `signal` module was removed.
+- `store` module was removed.
+
+### Fixed
+
 ## [0.0.2] - 2024-09-04
 
 Store module created.
