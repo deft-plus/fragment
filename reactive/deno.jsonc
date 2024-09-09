@@ -1,0 +1,22 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@fragment/reactive",
+  "version": "0.1.0",
+  "description": "🎯 Effortless reactive values",
+  "keywords": ["deno", "signal", "store", "reactive", "atomic", "state", "global"],
+  "license": "Apache-2.0",
+  "author": "Deft+",
+  "homepage": "https://github.com/deft-plus/fragment/reactive",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deft-plus/fragment.git"
+  },
+  "exports": {
+    ".": "./mod.ts",
+    "./effect": "./effect.ts",
+    "./memo": "./memo.ts",
+    "./promise": "./promise.ts",
+    "./signal": "./signal.ts",
+    "./store": "./store.ts"
+  }
+}

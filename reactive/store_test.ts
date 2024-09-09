@@ -1,17 +1,13 @@
-/**
- * @license
- * Copyright Deft+ All Rights Reserved.
- *
- * Use of this source code is governed by an Apache-2.0 license that can be
- * found in the LICENSE file at https://github.com/deft-plus/fragment.js/blob/latest/LICENCE
- */
+// Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
 import { describe, test } from '@std/testing/bdd';
 import { expect } from '@std/expect';
-import { delay } from '@std/async/delay';
-import { store } from '@/store/store.ts';
 
-describe('store / store()', () => {
+import { delay } from '@std/async/delay';
+
+import { store } from './store.ts';
+
+describe('reactive / store()', () => {
   type CounterStore = {
     count: number;
     increment: () => void;

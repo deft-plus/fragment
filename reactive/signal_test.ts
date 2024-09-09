@@ -1,38 +1,32 @@
-/**
- * @license
- * Copyright Deft+ All Rights Reserved.
- *
- * Use of this source code is governed by an Apache-2.0 license that can be
- * found in the LICENSE file at https://github.com/deft-plus/fragment/blob/latest/LICENCE
- */
+// Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
 import { describe, test } from '@std/testing/bdd';
 import { expect } from '@std/expect';
 
-import { createSignal } from '@/signal/signal.ts';
-import { type WritableSignal } from '@/signal/_api.ts';
-import { effect } from '@/signal/effect.ts';
+import type { WritableSignal } from './api.ts';
+import { signal } from './signal.ts';
+import { effect } from './effect.ts';
 
 type TestingUser = {
   name: string;
   age: number;
 };
 
-describe('signal / createSignal()', () => {
+describe('reactive / signal()', () => {
   test('should create a signal with the given initial value', () => {
-    const counter = createSignal(0);
+    const counter = signal(0);
 
     expect(counter()).toBe(0);
   });
 
   test('should create a signal with the given options', () => {
-    const counter = createSignal(0, { id: 'counter', log: true });
+    const counter = signal(0, { id: 'counter', log: true });
 
     expect(counter()).toBe(0);
   });
 
   test('should allow to set a new value to a signal', () => {
-    const counter = createSignal(0);
+    const counter = signal(0);
 
     counter.set(1);
 
@@ -40,7 +34,7 @@ describe('signal / createSignal()', () => {
   });
 
   test('should allow to update a signal value', () => {
-    const counter = createSignal(0);
+    const counter = signal(0);
 
     counter.update((value) => value + 1);
 
@@ -48,7 +42,7 @@ describe('signal / createSignal()', () => {
   });
 
   test('should allow to mutate a signal value', () => {
-    const counter = createSignal<TestingUser>({ name: 'Alice', age: 42 });
+    const counter = signal<TestingUser>({ name: 'Alice', age: 42 });
 
     counter.mutate((value) => {
       value.name = 'Bob';
@@ -58,7 +52,7 @@ describe('signal / createSignal()', () => {
   });
 
   test('should create a readonly signal', () => {
-    const counter = createSignal(0).readonly();
+    const counter = signal(0).readonly();
 
     expect(counter()).toBe(0);
 
@@ -71,7 +65,7 @@ describe('signal / createSignal()', () => {
   });
 
   test('should subscribe to readonly signals', () => {
-    const privateCounter = createSignal(0);
+    const privateCounter = signal(0);
 
     const counter = {
       mutable: privateCounter,
@@ -99,7 +93,7 @@ describe('signal / createSignal()', () => {
   test('should allow to use `onChange` hook', () => {
     const called = [] as number[];
 
-    const counter = createSignal(0, {
+    const counter = signal(0, {
       onChange: (value) => called.push(value),
     });
 
@@ -116,7 +110,7 @@ describe('signal / createSignal()', () => {
   });
 
   test('should allow to use computed values', () => {
-    const counter = createSignal(0);
+    const counter = signal(0);
     const doubleCounter = () => counter() * 2;
 
     expect(doubleCounter()).toBe(0);
@@ -127,8 +121,8 @@ describe('signal / createSignal()', () => {
   });
 
   test('should allow to pass signals as params and subscribe to changes', () => {
-    const firstName = createSignal('Alice');
-    const lastName = createSignal('Smith');
+    const firstName = signal('Alice');
+    const lastName = signal('Smith');
 
     type Signals = {
       firstName: WritableSignal<string>;
@@ -149,7 +143,7 @@ describe('signal / createSignal()', () => {
   test('should not track changes in untracked blocks', () => {
     const changes: number[] = [];
 
-    const counter = createSignal(0);
+    const counter = signal(0);
     const readonlyCounter = counter.readonly();
 
     effect(() => {
@@ -167,7 +161,7 @@ describe('signal / createSignal()', () => {
   });
 
   test('should have a toString implementation', () => {
-    const counter = createSignal(1);
+    const counter = signal(1);
     expect(counter + '').toBe('[Signal: 1]');
   });
 });

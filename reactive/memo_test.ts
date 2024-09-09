@@ -1,22 +1,19 @@
-/**
- * @license
- * Copyright Deft+ All Rights Reserved.
- *
- * Use of this source code is governed by an Apache-2.0 license that can be
- * found in the LICENSE file at https://github.com/deft-plus/fragment/blob/latest/LICENCE
- */
+// Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
 import { describe, test } from '@std/testing/bdd';
 import { expect } from '@std/expect';
-import { delay } from '@std/async';
-import { createMemoSignal, MemoizedSignal } from '@/signal/memo.ts';
-import { createSignal } from '@/signal/signal.ts';
-import { effect } from '@/signal/effect.ts';
 
-describe('signal / createMemoSignal()', () => {
+import { delay } from '@std/async';
+
+import type { MemoizedSignal } from './api.ts';
+import { memoSignal } from './memo.ts';
+import { signal } from './signal.ts';
+import { effect } from './effect.ts';
+
+describe('reactive / memoSignal()', () => {
   test('should allow to create a memoized signal', () => {
-    const counter = createSignal(0);
-    const doubleCounter = createMemoSignal(() => counter() * 2);
+    const counter = signal(0);
+    const doubleCounter = memoSignal(() => counter() * 2);
 
     expect(doubleCounter()).toBe(0);
 
@@ -26,10 +23,10 @@ describe('signal / createMemoSignal()', () => {
   });
 
   test('should allow to use memoized values with different equals fn', () => {
-    const counter = createSignal(0);
+    const counter = signal(0);
 
     // Can only be set to a value greater than or equal to the current value.
-    const doubleCounter = createMemoSignal(
+    const doubleCounter = memoSignal(
       () => counter() * 2,
       { equal: (a, b) => a >= b },
     );
@@ -54,8 +51,8 @@ describe('signal / createMemoSignal()', () => {
   });
 
   test('should schedule on dependencies (memoized) change', async () => {
-    const counter = createSignal(0);
-    const doubleCounter = createMemoSignal(() => counter() * 2);
+    const counter = signal(0);
+    const doubleCounter = memoSignal(() => counter() * 2);
 
     const effectCounter = [] as number[];
 
@@ -75,9 +72,9 @@ describe('signal / createMemoSignal()', () => {
   test('should allow to pass a config object', () => {
     const called = [] as number[];
 
-    const counter = createSignal(0);
+    const counter = signal(0);
 
-    const doubleCounter = createMemoSignal(
+    const doubleCounter = memoSignal(
       () => counter() * 2,
       {
         id: 'doubleCounter',
@@ -106,12 +103,12 @@ describe('signal / createMemoSignal()', () => {
   });
 
   test('should be able to keep track of multiple dependencies and batch changes', () => {
-    const counter = createSignal(0);
-    const counter2 = createSignal(0);
+    const counter = signal(0);
+    const counter2 = signal(0);
 
     const changes = [] as number[];
 
-    const doubleCounter = createMemoSignal(() => {
+    const doubleCounter = memoSignal(() => {
       const value = counter() * 2 + counter2();
       changes.push(value);
       return value;
@@ -129,8 +126,8 @@ describe('signal / createMemoSignal()', () => {
   test('should throw if it having a circular dependency', () => {
     let circularCounter: MemoizedSignal<number> | null = null;
 
-    const counter = createMemoSignal(() => (circularCounter?.() ?? 0) * 2);
-    circularCounter = createMemoSignal(() => counter());
+    const counter = memoSignal(() => (circularCounter?.() ?? 0) * 2);
+    circularCounter = memoSignal(() => counter());
 
     expect(() => counter()).toThrow();
   });
@@ -138,8 +135,8 @@ describe('signal / createMemoSignal()', () => {
   test('should not track changes in untracked blocks', () => {
     const changes: number[] = [];
 
-    const counter = createSignal(0);
-    const doubleCounter = createMemoSignal(() => counter() * 2);
+    const counter = signal(0);
+    const doubleCounter = memoSignal(() => counter() * 2);
 
     effect(() => {
       changes.push(doubleCounter.untracked());
@@ -155,11 +152,11 @@ describe('signal / createMemoSignal()', () => {
   });
 
   test('should allow to use a signal as a condition', () => {
-    const counter = createSignal(0);
-    const counter2 = createSignal(0);
-    const condition = createSignal(false);
+    const counter = signal(0);
+    const counter2 = signal(0);
+    const condition = signal(false);
 
-    const conditionalSignal = createMemoSignal(() => condition() ? counter() : counter2());
+    const conditionalSignal = memoSignal(() => condition() ? counter() : counter2());
 
     expect(conditionalSignal()).toBe(0);
 
@@ -174,10 +171,10 @@ describe('signal / createMemoSignal()', () => {
   });
 
   test('should no re-compute if the value is the same', () => {
-    const counter = createSignal(10);
-    const counter2 = createSignal(10);
+    const counter = signal(10);
+    const counter2 = signal(10);
 
-    const doubleCounter = createMemoSignal(() => counter() + counter2());
+    const doubleCounter = memoSignal(() => counter() + counter2());
 
     expect(doubleCounter()).toBe(20);
 
@@ -188,8 +185,8 @@ describe('signal / createMemoSignal()', () => {
   });
 
   test('should cache exceptions thrown until computed gets dirty again', () => {
-    const counter = createSignal(0);
-    const errorCounter = createMemoSignal(() => {
+    const counter = signal(0);
+    const errorCounter = memoSignal(() => {
       if (counter() === 0) {
         throw new Error('Counter is zero');
       }
@@ -205,10 +202,10 @@ describe('signal / createMemoSignal()', () => {
   });
 
   test("should not update dependencies of computations when dependencies don't change", () => {
-    const source = createSignal(0);
-    const isEven = createMemoSignal(() => source() % 2 === 0);
+    const source = signal(0);
+    const isEven = memoSignal(() => source() % 2 === 0);
     let updateCounter = 0;
-    const updateTracker = createMemoSignal(() => {
+    const updateTracker = memoSignal(() => {
       isEven();
       return updateCounter++;
     });
@@ -231,8 +228,8 @@ describe('signal / createMemoSignal()', () => {
   });
 
   test('should allow signal creation within computed', () => {
-    const doubleCounter = createMemoSignal(() => {
-      const counter = createSignal(1);
+    const doubleCounter = memoSignal(() => {
+      const counter = signal(1);
       return counter() * 2;
     });
 
@@ -240,8 +237,8 @@ describe('signal / createMemoSignal()', () => {
   });
 
   test('should have a toString implementation', () => {
-    const counter = createSignal(1);
-    const doubleCounter = createMemoSignal(() => counter() * 2);
+    const counter = signal(1);
+    const doubleCounter = memoSignal(() => counter() * 2);
     expect(doubleCounter + '').toBe('[MemoSignal: 2]');
   });
 });

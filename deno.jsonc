@@ -1,25 +1,15 @@
 {
-  "name": "@deft-plus/fragment",
-  "version": "0.1.0",
-  "description": "Development platform for building web applications using Typescript and Deno.",
-  "license": "Apache-2.0",
-  "author": "Deft+",
-  "homepage": "https://github.com/deft-plus/fragment",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/deft-plus/fragment.git"
-  },
   "lock": false,
   "tasks": {
     "lint": "deno lint && deno fmt --check",
     "fmt": "deno fmt",
     // Temporary workaround for absence of a good coverage tool.
-    "test": "rm -rf .coverage && deno test --coverage=.coverage **/*_test.ts && deno run -A scripts/coverage.ts",
-    "test:v": "vitest"
+    "test": "rm -rf .coverage && deno test --coverage=.coverage **/*_test.ts ; deno run -A scripts/coverage.ts",
+    "docs:generate": "rm -rf .deno-docs && deno doc --html --output=./.deno-docs reactive/*.ts",
+    "docs:lint": "deno doc --lint reactive/*.ts",
+    "version": "deno run -A scripts/version.ts"
   },
   "imports": {
-    "@/signal/": "./signal/",
-    "@/store/": "./store/",
     "@std/assert": "jsr:@std/assert@^1.0.3",
     "@std/async": "jsr:@std/async@^1.0.4",
     "@std/expect": "jsr:@std/expect@^1.0.1",
@@ -28,9 +18,7 @@
     "@std/streams": "jsr:@std/streams@^1.0.3",
     "@std/testing": "jsr:@std/testing@^1.0.1"
   },
-  "exports": {
-    "./signal": "./signal/mod.ts"
-  },
+  "workspace": ["./reactive"],
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "dom.extras", "deno.ns"],
     "allowJs": false,
@@ -46,7 +34,7 @@
   },
   "fmt": {
     "include": ["./"],
-    "exclude": [".coverage", ".git", "browser", "**/*.js"],
+    "exclude": [".git", ".coverage", ".deno-docs"],
     "useTabs": false,
     "lineWidth": 100,
     "indentWidth": 2,
@@ -54,19 +42,27 @@
     "proseWrap": "never"
   },
   "lint": {
-    "exclude": [".coverage", ".git", "browser", "**/*.js"],
+    "exclude": [".git", ".coverage", ".deno-docs"],
     "rules": {
       "tags": ["recommended"],
       "include": [
-        "no-external-import",
-        "ban-untagged-todo",
-        "camelcase",
-        "eqeqeq",
+        "no-console",
         "no-eval",
+        "eqeqeq",
+        "camelcase",
+        "no-self-compare",
+        "ban-untagged-todo",
+        "no-external-import",
+        "no-sparse-arrays",
         "no-non-null-assertion",
         "no-non-null-asserted-optional-chain",
-        "no-sparse-arrays",
-        "explicit-function-return-type"
+        "explicit-function-return-type",
+        "explicit-module-boundary-types",
+        "no-sync-fn-in-async-fn",
+        "single-var-declarator",
+        "verbatim-module-syntax",
+        "no-throw-literal",
+        "prefer-ascii"
       ],
       "exclude": ["no-empty-interface"]
     }

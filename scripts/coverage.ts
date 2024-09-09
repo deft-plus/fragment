@@ -1,3 +1,5 @@
+// Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
+
 import { resolve } from '@std/path/resolve';
 import { basename } from '@std/path/basename';
 import { relative } from '@std/path/relative';

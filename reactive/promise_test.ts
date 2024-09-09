@@ -1,20 +1,16 @@
-/**
- * @license
- * Copyright Deft+ All Rights Reserved.
- *
- * Use of this source code is governed by an Apache-2.0 license that can be
- * found in the LICENSE file at https://github.com/deft-plus/fragment/blob/latest/LICENCE
- */
+// Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
 import { describe, test } from '@std/testing/bdd';
 import { expect } from '@std/expect';
-import { delay } from '@std/async';
-import { createPromiseSignal } from '@/signal/promise.ts';
 
-describe('signal / createPromiseSignal()', () => {
+import { delay } from '@std/async';
+
+import { signalFromPromise } from './promise.ts';
+
+describe('reactive / signalFromPromise()', () => {
   test('should create a signal from a promise function', async () => {
-    const promise1 = createPromiseSignal(() => delay(10).then(() => 'Hello, World!'));
-    const promise2 = createPromiseSignal(delay(10).then(() => 'Hello, World!'));
+    const promise1 = signalFromPromise(() => delay(10).then(() => 'Hello, World!'));
+    const promise2 = signalFromPromise(delay(10).then(() => 'Hello, World!'));
 
     expect(promise1()).toStrictEqual({ status: 'pending' });
     expect(promise2()).toStrictEqual({ status: 'pending' });
@@ -26,7 +22,7 @@ describe('signal / createPromiseSignal()', () => {
   });
 
   test('should return errors rejected by the promise', async () => {
-    const promise = createPromiseSignal(() => delay(10).then(() => Promise.reject('Error!')));
+    const promise = signalFromPromise(() => delay(10).then(() => Promise.reject('Error!')));
 
     expect(promise()).toStrictEqual({ status: 'pending' });
 
