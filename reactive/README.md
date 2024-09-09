@@ -1,6 +1,22 @@
-# `@fragment/reactive`
+# 🎯 Reactivity
+
+[![JSR](https://jsr.io/badges/@fragment/reactive)](https://jsr.io/@fragment/reactive) [![JSR Score](https://jsr.io/badges/@fragment/reactive/score)](https://jsr.io/@fragment/reactive)
 
 The `@fragment/reactive` module combines the power of reactive signals and stores to manage both individual reactive values and global state in your application. With this module, you can create reactive values (signals), manage derived values, and encapsulate state in stores, all with minimal boilerplate and a functional programming style.
+
+## Installation
+
+Install the `@fragment/reactive` package using deno:
+
+```bash
+deno add @fragment/reactive
+```
+
+Or using npm:
+
+```bash
+npx jsr add @fragment/reactive
+```
 
 ## Signals
 
@@ -23,6 +39,8 @@ Use `signal()` to create a `WritableSignal`. Writable signals allow updating the
 Example:
 
 ```typescript
+import { signal } from '@fragment/reactive';
+
 const counter = signal(0);
 
 counter.set(2);
@@ -39,7 +57,7 @@ Create a read-only signal with `signal(value).readonly()`. It restricts mutation
 Example:
 
 ```typescript
-const counter = signal(0).readonly();
+const readonlyCounter = signal(0).readonly();
 ```
 
 ### Memoized Signals
@@ -49,6 +67,8 @@ Use `memoSignal()` to create memoized signals that automatically update based on
 Example:
 
 ```typescript
+import { memoSignal } from '@fragment/reactive';
+
 const isEven = memoSignal(() => counter() % 2 === 0);
 ```
 
@@ -61,6 +81,8 @@ Memoized signals can be configured with an equality comparator to prevent unnece
 Example:
 
 ```typescript
+import { signalFromPromise } from '@fragment/reactive';
+
 // Function parameter.
 const data = signalFromPromise(async () => {
   const response = await fetch('https://api.example.com/data');
@@ -81,6 +103,8 @@ const data = signalFromPromise(
 Example:
 
 ```typescript
+import { effect, signal } from '@fragment/reactive';
+
 const counter = signal(0);
 
 effect(() => {
@@ -118,6 +142,8 @@ A store is an object containing signals and actions. It leverages signals intern
 Example:
 
 ```typescript
+import { store } from '@fragment/reactive';
+
 type CounterStore = {
   count: number;
   increment: () => void;
@@ -144,6 +170,8 @@ Stores can include derived values that depend on other signals. These derived va
 Example:
 
 ```typescript
+import { store } from '@fragment/reactive';
+
 type CounterStore = {
   count: number;
   double: number;
