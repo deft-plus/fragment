@@ -1,0 +1,10 @@
+@use '../lib/reset' as reset;
+@use '../lib/variables' as variables;
+@use '../lib/global' as global;
+@use '../components/navigation' as navigation;
+
+@include variables.apply;
+@include reset.apply;
+@include global.apply;
+
+@include navigation.apply;

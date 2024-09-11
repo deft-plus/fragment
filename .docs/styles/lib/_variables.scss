@@ -1,0 +1,111 @@
+@mixin apply {
+  :root,
+  :root::before,
+  :root::after {
+    --white: #ffffff;
+    --light: #c7c7c7;
+    --dark: #4b4b4b;
+    --black: #000000;
+    --scale-1: #f6f6f6;
+    --scale-2: #d8d8d8;
+    --scale-3: #bbbbbb;
+    --scale-4: #7f7f7f;
+    --scale-5: #5a5a5a;
+    --scale-6: #3b3b3b;
+    --scale-7: #212121;
+    --red: #d32f2f;
+    --pink: #c2185b;
+    --purple: #7b1fa2;
+    --deep-purple: #512da8;
+    --indigo: #303f9f;
+    --blue: #1976d2;
+    --light-blue: #0288d1;
+    --cyan: #0097a7;
+    --teal: #00796b;
+    --green: #388e3c;
+    --light-green: #689f38;
+    --lime: #afb42b;
+    --yellow: #fdd835;
+    --amber: #ffb300;
+    --orange: #f57c00;
+    --deep-orange: #e64a19;
+    --brown: #5d4037;
+    --grey: #616161;
+    --blue-grey: #455a64;
+
+    // Palette
+    --primary: var(--pink);
+    --secondary: var(--teal);
+    --info: var(--blue);
+    --success: var(--green);
+    --warning: var(--amber);
+    --error: var(--red);
+    --divider: var(--teal);
+
+    // Spacing
+    --space-0: 0rem;
+    --space-1: 0.45rem;
+    --space-2: 0.9rem;
+    --space-3: 1.25rem;
+    --space-4: 2rem;
+    --space-5: 3.5rem;
+    --space-6: 5rem;
+    --space-7: 7rem;
+    --space-8: 9rem;
+
+    // Sizes
+    --size-1: 4.5rem;
+    --size-2: 3rem;
+    --size-3: 2.5rem;
+    --size-4: 1.75rem;
+    --size-5: 1.45rem;
+    --size-6: 1.15rem;
+    --size-7: 0.85rem;
+
+    // Weight
+    --weight-light: 100;
+    --weight-normal: 400;
+    --weight-bold: 700;
+
+    // Indexes
+    --navigation: 1100;
+    --drawer: 1200;
+    --modal: 1300;
+    --snackbar: 1400;
+    --tooltip: 1500;
+
+    // Miscellaneous
+    --animation-function: cubic-bezier(0.16, 1, 0.29, 0.99);
+    --animation-speed: 667ms;
+    --radius-small: 3px;
+    --radius-normal: 5px;
+    --radius-large: 7px;
+    --radius-rounded: 9999px;
+
+    // Static palette colors
+    --text-light: var(--scale-1);
+    --text-dark: var(--scale-7);
+
+    @media (prefers-color-scheme: light) {
+      --text-primary: var(--text-dark);
+      --text-secondary: var(--scale-4);
+      --text-disabled: var(--scale-3);
+      --text-inverted: var(--text-light);
+      --divider: var(--scale-2);
+      --shadow: hsl(from var(--scale-7) h s l / 40%);
+      --background-main: var(--white);
+      --background-sheet: var(--scale-1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      --text-primary: var(--text-light);
+      --text-secondary: var(--scale-4);
+      --text-disabled: var(--scale-5);
+      --text-inverted: var(--text-dark);
+      --divider: var(--scale-6);
+      --shadow: hsl(from var(--black) h s l / 40%);
+      --background-main: var(--black);
+      --background-sheet: var(--scale-7);
+    }
+  }
+}
