@@ -56,7 +56,7 @@ Fragment offers a clean, secure, and modern solution for developing web applicat
 
 Don't wait—start building the future of the web today with **Fragment**!
 
-[Get Started with Fragment](https://fragment.dev)
+**Get Started with Fragment**
 
 ---
 
@@ -68,7 +68,7 @@ Fragment is a developer-friendly platform that leverages the power of TypeScript
 
 ---
 
-> 💡 **Pro Tip:** Stay tuned for upcoming features and updates by following Fragment on [Twitter](https://twitter.com/fragment_dev)!
+> 💡 **Pro Tip:** Stay tuned for upcoming features and updates.
 
 ---
 

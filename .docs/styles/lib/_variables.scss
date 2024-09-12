@@ -103,7 +103,7 @@
       --text-disabled: var(--scale-5);
       --text-inverted: var(--text-dark);
       --divider: var(--scale-6);
-      --shadow: hsl(from var(--black) h s l / 40%);
+      --shadow: hsl(from var(--scale-5) h s l / 40%);
       --background-main: var(--black);
       --background-sheet: var(--scale-7);
     }
