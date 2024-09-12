@@ -3,7 +3,6 @@ import type { Data } from 'lume/core/file.ts';
 import { html } from '@/includes/helpers/templates.ts';
 import { resolveStylesheetPath } from '@/includes/helpers/stylesheet_resolver.ts';
 import { navigation } from '@/includes/components/navigation.ts';
-import { asset } from '@/includes/helpers/asset.ts';
 
 /**
  * Base layout for all pages.
@@ -34,8 +33,8 @@ function baseLayout(data: Data): string {
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
 
     <!-- Styles -->
-    <link href="${asset('/styles/layouts/base.css')}" rel="stylesheet" />
-    <link href="${asset(`/styles${stylePath}.css`)}" rel="stylesheet" />
+    <link href="/styles/layouts/base.css" rel="stylesheet" />
+    <link href="/styles${stylePath}.css" rel="stylesheet" />
   </head>
 
   <body class="container">
