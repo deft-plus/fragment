@@ -4,21 +4,25 @@
     "lint": "deno lint && deno fmt --check",
     "fmt": "deno fmt",
     // Temporary workaround for absence of a good coverage tool.
-    "test": "rm -rf .coverage && deno test --coverage=.coverage **/*_test.ts ; deno run -A scripts/coverage.ts",
+    "test": "rm -rf .coverage && deno test --coverage=.coverage **/*_test.ts ; deno run -A .scripts/coverage.ts",
+    "docs:serve": "cd ./.docs && deno task serve ; cd ..",
+    "docs:build": "cd ./.docs && deno task build ; cd ..",
     "docs:generate": "rm -rf .deno-docs && deno doc --html --output=./.deno-docs reactive/*.ts",
     "docs:lint": "deno doc --lint reactive/*.ts",
-    "version": "deno run -A scripts/version.ts"
+    "version": "deno run -A .scripts/version.ts"
   },
   "imports": {
+    "@oak/oak": "jsr:@oak/oak@^17.0.0",
     "@std/assert": "jsr:@std/assert@^1.0.3",
     "@std/async": "jsr:@std/async@^1.0.4",
     "@std/expect": "jsr:@std/expect@^1.0.1",
     "@std/fmt": "jsr:@std/fmt@^1.0.1",
+    "@std/fs": "jsr:@std/fs@^1.0.3",
     "@std/path": "jsr:@std/path@^1.0.3",
     "@std/streams": "jsr:@std/streams@^1.0.3",
     "@std/testing": "jsr:@std/testing@^1.0.1"
   },
-  "workspace": ["./reactive"],
+  "workspace": ["./.docs", "./reactive"],
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "dom.extras", "deno.ns"],
     "allowJs": false,
