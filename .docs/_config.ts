@@ -10,6 +10,7 @@ import favicon from 'lume/plugins/favicon.ts';
 
 const site = lume({
   cwd: new URL('.', import.meta.url).pathname,
+  dest: '_site/fragment',
 });
 
 site
