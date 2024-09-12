@@ -1,4 +1,4 @@
-# `Fragment`
+# <img src=".assets/logo.svg" height="30" align="center" style="margin-right: 10px" /> `Fragment`
 
 Fragment is a development platform for building web applications using Typescript and Deno.
 

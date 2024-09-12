@@ -4,6 +4,9 @@
 deno.lock
 .coverage
 .deno-docs
+.docs/_site
+.docs/_cache
+.docs/.*
 
 # misc
 .DS_Store

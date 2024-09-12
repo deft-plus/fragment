@@ -34,10 +34,11 @@ jobs:
             ci
             chore
             revert
-          subjectPattern: '^[A-Z].+$'
+          subjectPattern: ^(?![A-Z]).+$
           subjectPatternError: |
-            The subject "{subject}" in the pull request title "{title}"
-            must start with an uppercase letter.
+            The subject "{subject}" found in the pull request title "{title}"
+            didn't match the configured pattern. Please ensure that the subject
+            doesn't start with an uppercase character.
           requireScope: true
           # This should be kept up-to-date with the current packages list
           scopes: |

@@ -1,0 +1,67 @@
+@mixin apply {
+  .navigation {
+    --height: 60px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--height);
+    z-index: 1000;
+    backdrop-filter: saturate(180%) blur(5px);
+    background: var(--background-main);
+    box-shadow: 0 0 10px var(--shadow);
+
+    &.offset {
+      display: block;
+      position: relative;
+      z-index: 0;
+      height: var(--height);
+      box-shadow: unset;
+    }
+
+    & > .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      & > .logo {
+        display: flex;
+        align-items: center;
+
+        & > img {
+          height: 25px;
+          margin-right: 10px;
+        }
+
+        & > p {
+          font-family: 'Ubuntu Mono', monospace;
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--primary);
+        }
+      }
+
+      & > .links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+
+        & > .link {
+          & > a {
+            display: flex;
+            padding: 5px;
+          }
+
+          &:last-child {
+            margin-left: 10px;
+          }
+        }
+      }
+    }
+  }
+}
