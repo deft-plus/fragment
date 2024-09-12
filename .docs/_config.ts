@@ -11,13 +11,7 @@ import basePath from 'lume/plugins/base_path.ts';
 
 const site = lume({
   cwd: new URL('.', import.meta.url).pathname,
-  ...(Deno.env.get('ENV') === 'prod' &&
-    { location: new URL('https://deft-plus.github.io/fragment') }),
 });
-
-if (Deno.env.get('ENV') === 'prod') {
-  site.use(basePath());
-}
 
 site
   .ignore('README.md')
@@ -26,6 +20,7 @@ site
     languages: ['en'],
     defaultLanguage: 'en',
   }))
+  .use(basePath())
   .use(favicon())
   .use(robots())
   .use(sitemap())
