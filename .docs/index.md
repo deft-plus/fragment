@@ -1,6 +1,7 @@
 ---
-title: Fragment • Home
 layout: layouts/base.ts
+title: Fragment • Home
+description: Fragment is a modern development platform for web applications, powered by TypeScript and Deno.
 ---
 
 # 🚀 Welcome to **Fragment**

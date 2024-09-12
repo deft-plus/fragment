@@ -7,11 +7,17 @@ import lightningCss from 'lume/plugins/lightningcss.ts';
 import sitemap from 'lume/plugins/sitemap.ts';
 import multilanguage from 'lume/plugins/multilanguage.ts';
 import favicon from 'lume/plugins/favicon.ts';
+import basePath from 'lume/plugins/base_path.ts';
 
 const site = lume({
   cwd: new URL('.', import.meta.url).pathname,
-  dest: '_site/fragment',
+  ...(Deno.env.get('ENV') === 'prod' &&
+    { location: new URL('https://deft-plus.github.io/fragment') }),
 });
+
+if (Deno.env.get('ENV') === 'prod') {
+  site.use(basePath());
+}
 
 site
   .ignore('README.md')
