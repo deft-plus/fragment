@@ -5,7 +5,7 @@
   },
   "tasks": {
     "lume": "echo \"import 'lume/cli.ts'\" | deno run -A -",
-    "build": "deno task lume",
-    "serve": "deno task lume -s"
+    "build": "ENV=prod deno task lume",
+    "serve": "ENV=dev deno task lume -s"
   }
 }

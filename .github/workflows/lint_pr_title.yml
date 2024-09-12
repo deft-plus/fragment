@@ -42,4 +42,5 @@ jobs:
           requireScope: true
           # This should be kept up-to-date with the current packages list
           scopes: |
+            internal
             reactive(/unstable)?
