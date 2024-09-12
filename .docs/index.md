@@ -3,15 +3,15 @@ title: Fragment • Home
 layout: layouts/base.ts
 ---
 
-# 🚀 Welcome to **Fragment**:
+# 🚀 Welcome to **Fragment**
 
-### The Modern Development Platform for Web Applications
+## The Modern Development Platform for Web Applications
 
 **Fragment** is a revolutionary development platform that simplifies the process of building web applications using **TypeScript** and **Deno**. If you're looking for an intuitive, fast, and secure way to develop web apps, then Fragment is the right tool for you.
 
 ---
 
-## Why Choose Fragment?
+### Why Choose Fragment?
 
 Building web applications has never been easier with **Fragment**. Here's why you should consider using it for your next project:
 
@@ -22,9 +22,9 @@ Building web applications has never been easier with **Fragment**. Here's why yo
 
 ---
 
-## Key Features of Fragment
+### Key Features of Fragment
 
-### 1. **TypeScript-First Approach**
+#### 1. **TypeScript-First Approach**
 
 Fragment is built with TypeScript in mind. This allows for a powerful, type-safe environment that enables:
 
@@ -32,7 +32,7 @@ Fragment is built with TypeScript in mind. This allows for a powerful, type-safe
 - **Improved developer productivity**
 - **Fewer runtime errors**
 
-### 2. **Deno Integration**
+#### 2. **Deno Integration**
 
 Deno is designed for modern web development, and it solves many of the issues developers face with Node.js, such as:
 
@@ -40,17 +40,17 @@ Deno is designed for modern web development, and it solves many of the issues de
 - First-class support for TypeScript without additional tooling.
 - Simplified module management—no more `node_modules`.
 
-### 3. **Minimal Configuration**
+#### 3. **Minimal Configuration**
 
 Get started in minutes with Fragment's easy setup. No more dealing with complex configuration files. Fragment focuses on convention over configuration to make development faster and more intuitive.
 
-### 4. **Modular and Extensible**
+#### 4. **Modular and Extensible**
 
 Fragment encourages modular development. You can break down your application into small, reusable pieces, making your code more maintainable and testable.
 
 ---
 
-## Ready to Build with Fragment?
+### Ready to Build with Fragment?
 
 Fragment offers a clean, secure, and modern solution for developing web applications using TypeScript and Deno. Whether you're building your next startup, a personal project, or a large-scale enterprise solution, Fragment has the tools and performance to support you.
 
@@ -60,7 +60,7 @@ Don't wait—start building the future of the web today with **Fragment**!
 
 ---
 
-## Conclusion
+### Conclusion
 
 Fragment is a developer-friendly platform that leverages the power of TypeScript and Deno, offering unparalleled performance, security, and scalability. It's the ideal choice for modern web development. By using Fragment, you'll be able to build applications that are fast, maintainable, and future-proof.
 
@@ -72,4 +72,4 @@ Fragment is a developer-friendly platform that leverages the power of TypeScript
 
 ---
 
-###### Happy coding with Fragment! 🚀
+###### Happy coding! 🚀
