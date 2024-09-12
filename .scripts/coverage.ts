@@ -131,6 +131,7 @@ export class ProjectCoverage {
         `${(this.linesHit / this.linesFound * 100).toFixed(2)}%`,
       );
     }
+    // deno-lint-ignore no-console
     console.log(this.#table.toString());
   }
 }
