@@ -1,0 +1,17 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@fragment/testing",
+  "version": "0.1.2",
+  "description": "🧪 Comprehensive testing utilities",
+  "keywords": ["deno", "testing"],
+  "license": "Apache-2.0",
+  "author": "Deft+",
+  "homepage": "https://github.com/deft-plus/fragment/testing",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deft-plus/fragment.git"
+  },
+  "exports": {
+    ".": "./mod.ts"
+  }
+}
