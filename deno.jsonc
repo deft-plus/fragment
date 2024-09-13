@@ -12,11 +12,9 @@
     "version": "deno run -A .scripts/version.ts"
   },
   "imports": {
-    "@oak/oak": "jsr:@oak/oak@^17.0.0",
     "@std/assert": "jsr:@std/assert@^1.0.3",
     "@std/async": "jsr:@std/async@^1.0.4",
     "@std/expect": "jsr:@std/expect@^1.0.1",
-    "@std/fmt": "jsr:@std/fmt@^1.0.1",
     "@std/fs": "jsr:@std/fs@^1.0.3",
     "@std/path": "jsr:@std/path@^1.0.3",
     "@std/streams": "jsr:@std/streams@^1.0.3",
