@@ -1,6 +1,6 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
-import { describe, test } from '@std/testing/bdd';
+import { group, test } from '@fragment/testing';
 import { expect } from '@std/expect';
 
 import type { WritableSignal } from './api.ts';
@@ -12,7 +12,7 @@ type TestingUser = {
   age: number;
 };
 
-describe('reactive / signal()', () => {
+group('reactive / signal()', () => {
   test('should create a signal with the given initial value', () => {
     const counter = signal(0);
 

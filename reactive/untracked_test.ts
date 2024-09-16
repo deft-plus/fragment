@@ -1,13 +1,13 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
-import { describe, test } from '@std/testing/bdd';
+import { group, test } from '@fragment/testing';
 import { expect } from '@std/expect';
 
 import { untrackedSignal } from './untracked.ts';
 import { signal } from './signal.ts';
 import { effect } from './effect.ts';
 
-describe('reactive / createUntrackedSignal()', () => {
+group('reactive / createUntrackedSignal()', () => {
   test('should not track changes in untracked blocks', () => {
     const changes: number[] = [];
 

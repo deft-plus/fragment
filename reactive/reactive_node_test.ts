@@ -1,9 +1,9 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
-import { describe, test } from '@std/testing/bdd';
+import { group, test } from '@fragment/testing';
 import { expect } from '@std/expect';
 
-describe('reactive / ReactiveNode()', () => {
+group('reactive / ReactiveNode()', () => {
   test('should pass', () => {
     expect(true).toBe(true);
   });

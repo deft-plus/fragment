@@ -1,13 +1,13 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
-import { describe, test } from '@std/testing/bdd';
+import { group, test } from '@fragment/testing';
 import { expect } from '@std/expect';
 
 import { delay } from '@std/async/delay';
 
 import { store } from './store.ts';
 
-describe('reactive / store()', () => {
+group('reactive / store()', () => {
   type CounterStore = {
     count: number;
     increment: () => void;

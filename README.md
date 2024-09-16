@@ -9,6 +9,7 @@ For detailed usage, examples, and API reference, check out the [Fragment Documen
 | Module                 | Description                                    | Status      |
 | ---------------------- | ---------------------------------------------- | ----------- |
 | [`reactive`](reactive) | 🎯 Effortless reactive values                  | Available   |
+| [`utils`](utils)       | 🚧 General-purpose utilities                   | Available   |
 | [`testing`](testing)   | 🧪 Comprehensive testing utilities             | Avaliable   |
 | `i18n`                 | 🌍 Internationalization and localization       | Coming Soon |
 | `runtime`              | ⏱️ Runtime utilities and helpers               | Coming Soon |
