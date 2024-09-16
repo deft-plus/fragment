@@ -57,18 +57,10 @@ export abstract class ReactiveNode {
     return previous;
   }
 
-  /**
-   * Called when a dependency may have changed.
-   *
-   * @returns void
-   */
+  /** Called when a dependency may have changed. */
   protected abstract onDependencyChange(): void;
 
-  /**
-   * Called when a consumer checks if the producer's value has changed.
-   *
-   * @returns void
-   */
+  /** Called when a consumer checks if the producer's value has changed. */
   protected abstract onProducerMayChanged(): void;
 
   /**
@@ -95,11 +87,7 @@ export abstract class ReactiveNode {
     return false;
   }
 
-  /**
-   * Notifies consumers that this producer's value may have changed.
-   *
-   * @returns void
-   */
+  /** Notifies consumers that this producer's value may have changed. */
   protected notifyConsumers(): void {
     const wasNotifying = ReactiveNode.notifying;
     ReactiveNode.notifying = true;
@@ -119,12 +107,7 @@ export abstract class ReactiveNode {
     }
   }
 
-  /**
-   * Records that this producer node was accessed in the current context.
-   *
-   * @returns void
-   * @throws Error if called during notification phase.
-   */
+  /** Records that this producer node was accessed in the current context. */
   protected recordAccess(): void {
     if (ReactiveNode.notifying) {
       throw new Error('Cannot read signals during notification phase.');

@@ -1,6 +1,12 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 // This module is browser compatible.
 
+/**
+ * Implements the logger for the testing runner.
+ *
+ * @module
+ */
+
 // TODO(@miguelbogota): Fix the colorizeCode function since it is not working as expected.
 
 // ANSI color codes for syntax highlighting.

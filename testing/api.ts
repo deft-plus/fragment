@@ -2,7 +2,7 @@
 // This module is browser compatible.
 
 /**
- * Implementation for testing APIs.
+ * Implementation for the testing APIs (internal).
  *
  * @module
  */
@@ -31,7 +31,7 @@ export interface TestHook {
 
 /** Options for defining a test suite group. */
 export interface GroupDefinition extends Omit<Deno.TestDefinition, 'fn'> {
-  /** The main function to define the test suite. */
+  /** The main function to define the group suite. */
   fn: () => void;
   /** Optional parent suite for the group. */
   suite?: SuiteIdentifier;
@@ -47,10 +47,7 @@ export interface TestDefinition extends Omit<Deno.TestDefinition, 'fn'> {
   suite?: SuiteIdentifier;
 }
 
-/**
- * Represents a suite of tests.
- * @internal
- */
+/** Represents a suite of tests. */
 export class Suite implements SuiteIdentifier {
   /** Keeps track of how many test suites are running. */
   static runningCount = 0;
@@ -139,8 +136,6 @@ export class Suite implements SuiteIdentifier {
 
   /**
    * Resets the suite state, used for testing.
-   *
-   * @returns void
    */
   static reset(): void {
     Suite.runningCount = 0;
@@ -153,7 +148,6 @@ export class Suite implements SuiteIdentifier {
    * Registers a test with Deno.
    *
    * @param options - The test options to register.
-   * @returns void
    */
   static registerTest(options: Deno.TestDefinition): void {
     // Removes undefined values from the options object.
@@ -168,7 +162,6 @@ export class Suite implements SuiteIdentifier {
    * Marks a suite as containing an "only" test, disabling all other tests.
    *
    * @param suite - The suite to mark as "only".
-   * @returns void
    */
   static markOnly(suite: Suite): void {
     if (!suite.hasOnlyTest) {
@@ -187,7 +180,6 @@ export class Suite implements SuiteIdentifier {
    *
    * @param suite - The suite to add the step to.
    * @param step - The step to add to the suite.
-   * @returns void
    */
   static addStep(suite: Suite, step: Suite | TestDefinition): void {
     if (step instanceof Suite ? step.hasOnlyTest || step.group.only : step.only) {
@@ -204,7 +196,6 @@ export class Suite implements SuiteIdentifier {
    *
    * @param suite - The suite to add the hook to.
    * @param hook - The hook to add to the suite.
-   * @returns void
    */
   static addHook(suite: Suite, hook: TestHook): void {
     suite.group.hooks ??= [];
@@ -216,7 +207,6 @@ export class Suite implements SuiteIdentifier {
    *
    * @param suite - The suite to run the steps for.
    * @param t - The test context to run the steps in.
-   * @returns void
    */
   static async runSteps(suite: Suite, t: Deno.TestContext): Promise<void> {
     const hasOnly = suite.hasOnlyTest || suite.group.only || false;

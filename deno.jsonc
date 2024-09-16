@@ -7,8 +7,8 @@
     "test": "rm -rf .coverage && deno test --coverage=.coverage **/*_test.ts ; deno run -A .scripts/coverage.ts",
     "docs:serve": "cd ./.docs && deno task serve ; cd ..",
     "docs:build": "cd ./.docs && deno task build ; cd ..",
-    "docs:generate": "rm -rf .deno-docs && deno doc --html --output=./.deno-docs reactive/*.ts",
-    "docs:lint": "deno doc --lint reactive/*.ts",
+    "jsdoc:generate": "rm -rf .deno-docs && deno doc --html --output=./.deno-docs reactive/*.ts testing/*.ts utils/*.ts",
+    "jsdoc:lint": "deno doc --lint reactive/*.ts",
     "version": "deno run -A .scripts/version.ts"
   },
   "imports": {

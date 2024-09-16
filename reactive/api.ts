@@ -183,21 +183,18 @@ export interface WritableSignal<T = unknown> extends ReadonlySignal<T> {
    * Set a new value and notify dependents.
    *
    * @param value - New value to set.
-   * @returns void
    */
   set(value: T): void;
   /**
    * Update the value based on the current value and notify dependents.
    *
    * @param updateFn - Function to update the value.
-   * @returns void
    */
   update(updateFn: (value: T) => T): void;
   /**
    * Modify the current value in-place and notify dependents.
    *
    * @param mutatorFn - Function to mutate the value.
-   * @returns void
    */
   mutate(mutatorFn: (value: T) => void): void;
   /**
@@ -250,7 +247,6 @@ export interface SignalOptions<T> {
    * Function to call after the signal value changes.
    *
    * @param newValue - New value of the signal.
-   * @returns void
    */
   onChange?: (newValue: T) => void;
 }
