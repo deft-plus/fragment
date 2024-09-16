@@ -1,7 +1,7 @@
 import type { Awaitable } from '@fragment/utils';
-import { Suite, type TestContext, type TestDefinition } from './_api.ts';
+import { Suite, type TestDefinition } from './_api.ts';
 
-type TestFn = (context: TestContext) => Awaitable<void>;
+type TestFn = () => Awaitable<void>;
 
 interface TestOptions extends Omit<Deno.TestDefinition, 'fn'> {
   fn: TestFn;
@@ -34,7 +34,7 @@ export function test(...args: TestArgs): void {
   }
 
   const options = testDefinition(...args);
-  const testSuite = options.suite ? Suite.suites.get(options.suite.symbol) : Suite.current;
+  const testSuite = options.suite ? Suite.suites.get(options.suite.identifier) : Suite.current;
 
   if (!Suite.started) {
     Suite.started = true;
@@ -47,11 +47,11 @@ export function test(...args: TestArgs): void {
 
   Suite.registerTest({
     ...options,
-    fn: async (t) => {
+    fn: async () => {
       Suite.runningCount++;
 
       try {
-        await options.fn(Suite.createContext(t));
+        await options.fn();
       } finally {
         Suite.runningCount--;
       }

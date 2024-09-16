@@ -7,7 +7,7 @@ function addHook(hook: TestHook): void {
   }
 
   Suite.current = new Suite({ name: 'global', hooks: [] } as unknown as GroupDefinition);
-  Suite.setHook(Suite.current, hook);
+  Suite.addHook(Suite.current, hook);
 }
 
 export function beforeEach(fn: () => Awaitable<void>): void {

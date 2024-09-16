@@ -1,100 +1,104 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 // This module is browser compatible.
 
+/**
+ * Implementation for testing APIs.
+ *
+ * @module
+ */
+
 import type { Awaitable } from '@fragment/utils';
 
-/** A group of tests. */
-abstract class SuiteSymbol {
+/**
+ * Represents a group of tests within a suite.
+ * @internal
+ */
+abstract class SuiteIdentifier {
   /** Unique identifier for the suite. */
-  public abstract symbol: symbol;
+  public abstract identifier: symbol;
 }
 
-/** The context object that is passed to each test case. */
-export interface TestContext extends Omit<Deno.TestContext, 'step' | 'parent'> {
-  parent?: TestContext;
-}
-
-/** The names of all the different types of hooks. */
+/** Defines the possible types of test hooks. */
 export type TestHookType = 'beforeAll' | 'afterAll' | 'beforeEach' | 'afterEach';
 
-/** A hook is a function that runs before or after a test suite or test case. */
+/** Describes a hook to be executed before or after tests. */
 export interface TestHook {
+  /** The type of the hook (before/after). */
   type: TestHookType;
-  fn(): Awaitable<void>;
+  /** The action to be performed by the hook. */
+  fn: () => Awaitable<void>;
 }
 
-/** The options for creating a test suite with the group function. */
+/** Options for defining a test suite group. */
 export interface GroupDefinition extends Omit<Deno.TestDefinition, 'fn'> {
-  /** The body of the test suite */
+  /** The main function to define the test suite. */
   fn: () => void;
-  /**
-   * The `group` function returns a `TestSuite` representing the group of tests.
-   * If `group` is called within another `group` calls `fn`, the suite will default to that parent `group` calls returned `TestSuite`.
-   * If `group` is not called within another `group` calls `fn`, the suite will default to the `TestSuite` representing the global group of tests.
-   */
-  suite?: SuiteSymbol;
-  /** Hooks to setup/teardown before/after all tests in the suite. */
+  /** Optional parent suite for the group. */
+  suite?: SuiteIdentifier;
+  /** Hooks for setting up and tearing down tests. */
   hooks: TestHook[];
 }
 
-/** The options for creating an individual test case with the it function. */
+/** Options for defining an individual test case. */
 export interface TestDefinition extends Omit<Deno.TestDefinition, 'fn'> {
-  /** The body of the test case */
-  fn: (context: TestContext) => Awaitable<void>;
-  /**
-   * The `group` function returns a `TestSuite` representing the group of tests.
-   * If `test` is called within a `group` calls `fn`, the suite will default to that parent `group` calls returned `TestSuite`.
-   * If `test` is not called within a `group` calls `fn`, the suite will default to the `TestSuite` representing the global group of tests.
-   */
-  suite?: SuiteSymbol;
+  /** The main function to define the test case. */
+  fn: () => Awaitable<void>;
+  /** Optional parent suite for the test. */
+  suite?: SuiteIdentifier;
 }
 
-/** An internal representation of a group of tests. */
-export class Suite implements SuiteSymbol {
-  /** Stores how many test suites are executing. */
+/**
+ * Represents a suite of tests.
+ * @internal
+ */
+export class Suite implements SuiteIdentifier {
+  /** Keeps track of how many test suites are running. */
   static runningCount = 0;
 
-  /** If a test has been registered yet. Block adding global hooks if a test has been registered. */
+  /** Indicates if any test has been registered. Blocks global hooks if true. */
   static started = false;
 
-  /** A map of all test suites by symbol. */
+  /** A map of all registered suites by their unique symbols. */
   static suites = new Map<symbol, Suite>();
 
-  /** The current test suite being registered. */
+  /** The currently registered suite. */
   static current: Suite | null = null;
 
-  /** The stack of tests that are actively running. */
+  /** The stack of tests currently running. */
   static active: symbol[] = [];
 
-  /** Unique identifier for the suite. */
-  public symbol: symbol;
+  /** Unique identifier for this suite. */
+  public identifier: symbol;
 
-  /** Reference to the group definition of the suit. */
+  /** The group definition for this suite. */
   protected group: GroupDefinition;
 
-  /** Steps to run in the group. */
+  /** The steps (tests or nested suites) to run in this suite. */
   protected steps: (Suite | TestDefinition)[];
 
-  /** If the group has an only step case. */
-  protected hasOnlyStep: boolean;
+  /** Whether this suite contains a test marked as "only". */
+  protected hasOnlyTest: boolean;
 
+  /**
+   * Constructs a new suite.
+   * @param group - The group definition for this suite.
+   */
   constructor(group: GroupDefinition) {
     this.group = group;
     this.steps = [];
-    this.hasOnlyStep = false;
+    this.hasOnlyTest = false;
 
     const parentSuite = this.group.suite
-      ? Suite.suites.get(this.group.suite.symbol)
+      ? Suite.suites.get(this.group.suite.identifier)
       : Suite.current;
 
-    this.symbol = Symbol();
-    Suite.suites.set(this.symbol, this);
+    this.identifier = Symbol();
+    Suite.suites.set(this.identifier, this);
 
     const previousSuite = Suite.current;
     Suite.current = this;
 
     try {
-      // Event if type forces fn to be a function, it can be undefined in the global group.
       const value = group.fn?.() as unknown as () => Awaitable<void>;
       if (value instanceof Promise) {
         throw new Error('Returning a Promise from "group" is not supported');
@@ -103,26 +107,28 @@ export class Suite implements SuiteSymbol {
       Suite.current = previousSuite;
     }
 
+    // If the suite has a parent, add it to the parent suite.
     if (parentSuite) {
       Suite.addStep(parentSuite, this);
       return;
     }
 
+    // If the suite has no parent, register it as a test suite.
     Suite.registerTest({
       ...this.group,
-      only: !this.group.ignore && this.hasOnlyStep ? true : this.group.only,
+      only: !this.group.ignore && this.hasOnlyTest ? true : this.group.only,
       name: this.group.name,
       fn: async (t) => {
         Suite.runningCount++;
         try {
-          await Suite.executeHooks('beforeAll', this.group.hooks);
+          await Suite.runHooks('beforeAll', this.group.hooks);
 
           try {
-            Suite.active.push(this.symbol);
-            await Suite.run(this, t);
+            Suite.active.push(this.identifier);
+            await Suite.runSteps(this, t);
           } finally {
             Suite.active.pop();
-            await Suite.executeHooks('afterAll', this.group.hooks);
+            await Suite.runHooks('afterAll', this.group.hooks);
           }
         } finally {
           Suite.runningCount--;
@@ -131,7 +137,11 @@ export class Suite implements SuiteSymbol {
     });
   }
 
-  /** This is used internally for testing this module. */
+  /**
+   * Resets the suite state, used for testing.
+   *
+   * @returns void
+   */
   static reset(): void {
     Suite.runningCount = 0;
     Suite.started = false;
@@ -139,8 +149,14 @@ export class Suite implements SuiteSymbol {
     Suite.active = [];
   }
 
-  /** This is used internally to register tests. */
+  /**
+   * Registers a test with Deno.
+   *
+   * @param options - The test options to register.
+   * @returns void
+   */
   static registerTest(options: Deno.TestDefinition): void {
+    // Removes undefined values from the options object.
     const filteredOptions = Object.fromEntries(
       Object.entries(options).filter(([_, v]) => v !== undefined),
     );
@@ -148,47 +164,68 @@ export class Suite implements SuiteSymbol {
     Deno.test(filteredOptions as Deno.TestDefinition);
   }
 
-  /** Updates all steps within top level suite to have ignore set to true if only is not set to true on step. */
-  static addingOnlyStep(suite: Suite): void {
-    if (!suite.hasOnlyStep) {
+  /**
+   * Marks a suite as containing an "only" test, disabling all other tests.
+   *
+   * @param suite - The suite to mark as "only".
+   * @returns void
+   */
+  static markOnly(suite: Suite): void {
+    if (!suite.hasOnlyTest) {
       suite.steps = suite.steps.filter((step) => step instanceof Suite || step.only);
-      suite.hasOnlyStep = true;
+      suite.hasOnlyTest = true;
     }
 
-    const parentSuite = suite.group.suite && Suite.suites.get(suite.group.suite.symbol);
+    const parentSuite = suite.group.suite && Suite.suites.get(suite.group.suite.identifier);
     if (parentSuite) {
-      Suite.addingOnlyStep(parentSuite);
+      Suite.markOnly(parentSuite);
     }
   }
 
-  /** This is used internally to add steps to a test suite. */
+  /**
+   * Adds a step (test or suite) to a test suite.
+   *
+   * @param suite - The suite to add the step to.
+   * @param step - The step to add to the suite.
+   * @returns void
+   */
   static addStep(suite: Suite, step: Suite | TestDefinition): void {
-    if (step instanceof Suite ? step.hasOnlyStep || step.group.only : step.only) {
-      // Nested groups.
-      Suite.addingOnlyStep(suite);
+    if (step instanceof Suite ? step.hasOnlyTest || step.group.only : step.only) {
+      Suite.markOnly(suite);
     }
 
-    if (!(suite.hasOnlyStep && !(step instanceof Suite) && !step.only)) {
-      // Add the step to the suite.
+    if (!(suite.hasOnlyTest && !(step instanceof Suite) && !step.only)) {
       suite.steps.push(step);
     }
   }
 
-  /** This is used internally to add hooks to a test suite. */
-  static setHook(suite: Suite, hook: TestHook): void {
+  /**
+   * Adds a hook to the test suite.
+   *
+   * @param suite - The suite to add the hook to.
+   * @param hook - The hook to add to the suite.
+   * @returns void
+   */
+  static addHook(suite: Suite, hook: TestHook): void {
     suite.group.hooks ??= [];
     suite.group.hooks.push(hook);
   }
 
-  /** This is used internally to run all steps for a test suite. */
-  static async run(suite: Suite, t: Deno.TestContext): Promise<void> {
-    const hasOnly = suite.hasOnlyStep || suite.group.only || false;
+  /**
+   * Executes all steps (tests and nested suites) in a test suite.
+   *
+   * @param suite - The suite to run the steps for.
+   * @param t - The test context to run the steps in.
+   * @returns void
+   */
+  static async runSteps(suite: Suite, t: Deno.TestContext): Promise<void> {
+    const hasOnly = suite.hasOnlyTest || suite.group.only || false;
 
     for (const step of suite.steps) {
       const isSuite = step instanceof Suite;
       const options = isSuite ? step.group : step;
 
-      if (hasOnly && isSuite && !(step.hasOnlyStep || step.group.only)) {
+      if (hasOnly && isSuite && !(step.hasOnlyTest || step.group.only)) {
         continue;
       }
 
@@ -200,24 +237,19 @@ export class Suite implements SuiteSymbol {
             throw new Error('permissions option not available for nested tests');
           }
 
-          const ctx = Suite.createContext(t);
-
           if (isSuite) {
-            // Nested groups.
-            await Suite.executeHooks('beforeAll', step.group.hooks);
+            await Suite.runHooks('beforeAll', step.group.hooks);
 
             try {
-              Suite.active.push(step.symbol);
-              await Suite.run(step, t);
+              Suite.active.push(step.identifier);
+              await Suite.runSteps(step, t);
             } finally {
               Suite.active.pop();
-              await Suite.executeHooks('afterAll', step.group.hooks);
+              await Suite.runHooks('afterAll', step.group.hooks);
             }
           } else {
-            // Test cases.
-            // Event if type forces fn to be a function, it can be undefined in the global group.
             if (options.fn) {
-              await Suite.runTest(ctx, options.fn);
+              await Suite.executeTest(options.fn);
             }
           }
         },
@@ -225,44 +257,44 @@ export class Suite implements SuiteSymbol {
     }
   }
 
-  static async runTest(
-    t: TestContext,
-    fn: (t: TestContext) => Awaitable<void>,
+  /**
+   * Executes a test case.
+   *
+   * @param execute - The test case to execute.
+   * @param activeIndex - The index of the active suite in the stack (internal use).
+   * @returns Promise<void>
+   */
+  static async executeTest(
+    execute: () => Awaitable<void>,
     activeIndex = 0,
   ): Promise<void> {
     const suiteSymbol = Suite.active[activeIndex];
     const testSuite = suiteSymbol && Suite.suites.get(suiteSymbol);
 
     if (!testSuite) {
-      await fn(t);
+      await execute();
       return;
     }
 
-    await Suite.executeHooks('beforeEach', testSuite.group.hooks);
+    await Suite.runHooks('beforeEach', testSuite.group.hooks);
 
     try {
-      await Suite.runTest(t, fn, activeIndex + 1);
+      await Suite.executeTest(execute, activeIndex + 1);
     } finally {
-      await Suite.executeHooks('afterEach', testSuite.group.hooks);
+      await Suite.runHooks('afterEach', testSuite.group.hooks);
     }
   }
 
-  private static async executeHooks(name: TestHookType, hooks: TestHook[]): Promise<void> {
-    for (const hook of hooks.filter((hook) => hook.type === name)) {
-      await hook.fn();
+  /**
+   * Executes all hooks of a given type.
+   *
+   * @param name - The type of hook to run.
+   * @param hooks - The hooks to run.
+   * @returns Promise<void>
+   */
+  private static async runHooks(name: TestHookType, hooks: TestHook[]): Promise<void> {
+    for (const { fn } of hooks.filter((hook) => hook.type === name)) {
+      await fn();
     }
-  }
-
-  public static createContext(t: Deno.TestContext): TestContext {
-    const { step: _, ...otherValues } = t;
-    const context: TestContext = { ...otherValues }; // Clone the context object.
-
-    const parent = otherValues.parent;
-    if (parent) {
-      const { step: _, ...parentValues } = parent;
-      context.parent = { ...parentValues };
-    }
-
-    return context;
   }
 }
