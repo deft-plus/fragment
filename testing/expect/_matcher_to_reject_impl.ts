@@ -24,6 +24,13 @@ export async function toRejectImpl(options: MatcherImplOptions): Promise<void> {
 
   try {
     const promise = typeof actual === 'function' ? actual() : actual;
+
+    if (!(promise instanceof Promise)) {
+      throw new AssertionError(
+        'Expect.toReject must be called with a function that returns a promise',
+      );
+    }
+
     await promise;
   } catch (e) {
     thrown = true;
