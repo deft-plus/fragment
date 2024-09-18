@@ -5,4 +5,6 @@
 export interface ExpectContext {
   /** Whether the matcher is negated. */
   negated: boolean;
+  /** Context from the deno test runner. */
+  t: Deno.TestContext | null;
 }

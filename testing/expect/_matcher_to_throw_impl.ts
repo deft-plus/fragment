@@ -19,7 +19,7 @@ export function toThrowImpl(options: MatcherImplOptions): void {
   let error: Error | undefined;
 
   if (typeof actual !== 'function') {
-    throw new AssertionError('Expect.toThrow must be called with a function or a promise');
+    throw new AssertionError('toThrow must be called with a function or a promise');
   }
 
   try {

@@ -3,12 +3,14 @@
 
 import type { ExpectContext } from './_context.ts';
 import type { MatcherImplOptions } from './_matcher_impl_options.ts';
+import { Suite } from '../api.ts';
 // Matchers implementations.
 import { toBeOneOfImpl } from './_matcher_to_be_one_of_impl.ts';
 import { toEqualImpl } from './_matcher_to_equal_impl.ts';
 import { toStrictEqualImpl } from './_matcher_to_strict_equal_impl.ts';
 import { toThrowImpl } from './_matcher_to_throw_impl.ts';
 import { toRejectImpl } from './_matcher_to_reject_impl.ts';
+import { toMatchSnapshotImpl } from './_matcher_to_match_snapshot_impl.ts';
 
 /** The Matchers class contains all the matchers that can be used with the expect function. */
 export abstract class Matchers {
@@ -158,6 +160,23 @@ export abstract class Matchers {
   }
 
   /**
+   * Asserts that the actual value matches the snapshot.
+   *
+   * It's important to await this method to ensure the snapshot is saved.
+   *
+   * @example Usage
+   * ```ts
+   * await expect(1).toMatchSnapshot(); // Passes
+   * await expect(2).toMatchSnapshot(); // Fails
+   * ```
+   *
+   * **Note:** This method has to be called within a test case since it relies on the test context.
+   */
+  public toMatchSnapshot(): Promise<void> {
+    return toMatchSnapshotImpl(this._matcherImplOptions(undefined));
+  }
+
+  /**
    * Utility method to create the options for the matcher implementations.
    *
    * @param expected - The expected value.
@@ -179,6 +198,7 @@ export abstract class Matchers {
   private _context(): ExpectContext {
     return {
       negated: this.negated,
+      t: Suite.t,
     };
   }
 }

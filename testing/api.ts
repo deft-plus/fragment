@@ -50,19 +50,22 @@ export interface TestDefinition extends Omit<Deno.TestDefinition, 'fn'> {
 /** Represents a suite of tests. */
 export class Suite implements SuiteIdentifier {
   /** Keeps track of how many test suites are running. */
-  static runningCount = 0;
+  public static runningCount = 0;
 
   /** Indicates if any test has been registered. Blocks global hooks if true. */
-  static started = false;
+  public static started = false;
 
   /** A map of all registered suites by their unique symbols. */
-  static suites = new Map<symbol, Suite>();
+  public static suites = new Map<symbol, Suite>();
 
   /** The currently registered suite. */
-  static current: Suite | null = null;
+  public static current: Suite | null = null;
 
   /** The stack of tests currently running. */
-  static active: symbol[] = [];
+  public static active: symbol[] = [];
+
+  /** The Deno test context for this suite. */
+  public static t: Deno.TestContext | null = null;
 
   /** Unique identifier for this suite. */
   public identifier: symbol;
@@ -116,6 +119,7 @@ export class Suite implements SuiteIdentifier {
       only: !this.group.ignore && this.hasOnlyTest ? true : this.group.only,
       name: this.group.name,
       fn: async (t) => {
+        Suite.t = t;
         Suite.runningCount++;
         try {
           await Suite.runHooks('beforeAll', this.group.hooks);
@@ -137,7 +141,7 @@ export class Suite implements SuiteIdentifier {
   /**
    * Resets the suite state, used for testing.
    */
-  static reset(): void {
+  public static reset(): void {
     Suite.runningCount = 0;
     Suite.started = false;
     Suite.current = null;
@@ -149,7 +153,7 @@ export class Suite implements SuiteIdentifier {
    *
    * @param options - The test options to register.
    */
-  static registerTest(options: Deno.TestDefinition): void {
+  public static registerTest(options: Deno.TestDefinition): void {
     // Removes undefined values from the options object.
     const filteredOptions = Object.fromEntries(
       Object.entries(options).filter(([_, v]) => v !== undefined),
@@ -163,7 +167,7 @@ export class Suite implements SuiteIdentifier {
    *
    * @param suite - The suite to mark as "only".
    */
-  static markOnly(suite: Suite): void {
+  public static markOnly(suite: Suite): void {
     if (!suite.hasOnlyTest) {
       suite.steps = suite.steps.filter((step) => step instanceof Suite || step.only);
       suite.hasOnlyTest = true;
@@ -181,7 +185,7 @@ export class Suite implements SuiteIdentifier {
    * @param suite - The suite to add the step to.
    * @param step - The step to add to the suite.
    */
-  static addStep(suite: Suite, step: Suite | TestDefinition): void {
+  public static addStep(suite: Suite, step: Suite | TestDefinition): void {
     if (step instanceof Suite ? step.hasOnlyTest || step.group.only : step.only) {
       Suite.markOnly(suite);
     }
@@ -197,7 +201,7 @@ export class Suite implements SuiteIdentifier {
    * @param suite - The suite to add the hook to.
    * @param hook - The hook to add to the suite.
    */
-  static addHook(suite: Suite, hook: TestHook): void {
+  public static addHook(suite: Suite, hook: TestHook): void {
     suite.group.hooks ??= [];
     suite.group.hooks.push(hook);
   }
@@ -208,7 +212,7 @@ export class Suite implements SuiteIdentifier {
    * @param suite - The suite to run the steps for.
    * @param t - The test context to run the steps in.
    */
-  static async runSteps(suite: Suite, t: Deno.TestContext): Promise<void> {
+  public static async runSteps(suite: Suite, t: Deno.TestContext): Promise<void> {
     const hasOnly = suite.hasOnlyTest || suite.group.only || false;
 
     for (const step of suite.steps) {
@@ -254,7 +258,7 @@ export class Suite implements SuiteIdentifier {
    * @param activeIndex - The index of the active suite in the stack (internal use).
    * @returns Promise<void>
    */
-  static async executeTest(
+  public static async executeTest(
     execute: () => Awaitable<void>,
     activeIndex = 0,
   ): Promise<void> {

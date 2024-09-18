@@ -4,7 +4,8 @@
     "lint": "deno lint && deno fmt --check",
     "fmt": "deno fmt",
     // Temporary workaround for absence of a good coverage tool.
-    "test": "rm -rf .coverage && deno test --coverage=.coverage **/*_test.ts ; deno run -A .scripts/coverage.ts",
+    "test": "rm -rf .coverage && deno test -A --coverage=.coverage **/*_test.ts ; deno run -A .scripts/coverage.ts",
+    "test:u": "rm -rf .coverage && deno test -A --coverage=.coverage **/*_test.ts -- -u ; deno run -A .scripts/coverage.ts",
     "docs:serve": "cd ./.docs && deno task serve ; cd ..",
     "docs:build": "cd ./.docs && deno task build ; cd ..",
     "jsdoc:generate": "rm -rf .deno-docs && deno doc --html --output=./.deno-docs reactive/**/*.ts testing/**/*.ts utils/**/*.ts",
