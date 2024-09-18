@@ -2,7 +2,8 @@
 // This module is browser compatible.
 
 /**
- * Implements all the hooks ({@link beforeAll}, {@link afterAll}, {@link beforeEach} & {@link afterEach}) for the test suite.
+ * Implements all the hooks ({@link beforeAll}, {@link afterAll}, {@link beforeEach} &
+ * {@link afterEach}) for the test suite.
  *
  * @module
  */
