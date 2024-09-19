@@ -9,7 +9,7 @@
 
 import type { Awaitable } from '@fragment/utils';
 
-import { type GroupDefinition, Suite, type TestHook } from './_api.ts';
+import { type GroupDefinition, Suite, type SuiteHook } from './_api.ts';
 
 /**
  * Adds a hook to the current suite, otherwise creates a global suite to add the hook.
@@ -18,7 +18,7 @@ import { type GroupDefinition, Suite, type TestHook } from './_api.ts';
 
  * @internal
  */
-function addHook(hook: TestHook): void {
+function addHook(hook: SuiteHook): void {
   if (Suite.started && !Suite.current) {
     throw new Error('Cannot add global hooks after a global test is registered');
   }

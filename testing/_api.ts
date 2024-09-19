@@ -18,12 +18,12 @@ abstract class SuiteIdentifier {
 }
 
 /** Defines the possible types of test hooks. */
-export type TestHookType = 'beforeAll' | 'afterAll' | 'beforeEach' | 'afterEach';
+export type SuiteHookType = 'beforeAll' | 'afterAll' | 'beforeEach' | 'afterEach';
 
 /** Describes a hook to be executed before or after tests. */
-export interface TestHook {
+export interface SuiteHook {
   /** The type of the hook (before/after). */
-  type: TestHookType;
+  type: SuiteHookType;
   /** The action to be performed by the hook. */
   fn: () => Awaitable<void>;
 }
@@ -35,7 +35,7 @@ export interface GroupDefinition extends Omit<Deno.TestDefinition, 'fn'> {
   /** Optional parent suite for the group. */
   suite?: SuiteIdentifier;
   /** Hooks for setting up and tearing down tests. */
-  hooks: TestHook[];
+  hooks: SuiteHook[];
 }
 
 /** Options for defining an individual test case. */
@@ -200,7 +200,7 @@ export class Suite implements SuiteIdentifier {
    * @param suite - The suite to add the hook to.
    * @param hook - The hook to add to the suite.
    */
-  public static addHook(suite: Suite, hook: TestHook): void {
+  public static addHook(suite: Suite, hook: SuiteHook): void {
     suite.group.hooks ??= [];
     suite.group.hooks.push(hook);
   }
@@ -285,7 +285,7 @@ export class Suite implements SuiteIdentifier {
    * @param hooks - The hooks to run.
    * @returns Promise<void>
    */
-  private static async runHooks(name: TestHookType, hooks: TestHook[]): Promise<void> {
+  private static async runHooks(name: SuiteHookType, hooks: SuiteHook[]): Promise<void> {
     for (const { fn } of hooks.filter((hook) => hook.type === name)) {
       await fn();
     }
