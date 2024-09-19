@@ -27,22 +27,20 @@ The core of the `@fragment/testing` module revolves around test functions (`test
 Here's a basic example of how to write a test:
 
 ```typescript
-import { expect, group, test } from '@fragment/testing';
+import { expect, test } from '@fragment/testing';
 
-group('math functions', () => {
-  test('should add numbers correctly', () => {
-    expect(1 + 2).toBe(3);
-  });
+test('should add numbers correctly', () => {
+  expect(1 + 2).toBe(3);
+});
 
-  test('should subtract numbers correctly', () => {
-    expect(5 - 2).toBe(3);
-  });
+test('should subtract numbers correctly', () => {
+  expect(5 - 2).toBe(3);
 });
 ```
 
 ### Grouping Tests
 
-You must always use `group` to group related tests together. This helps in organizing your tests and running them in a structured manner. This also help to keep the logs clean and easy to read.
+You can use `group` to group related tests together. This helps in organizing your tests and running them in a structured manner. This also help to keep the logs clean and easy to read.
 
 ```typescript
 import { expect, group, test } from '@fragment/testing';
@@ -56,30 +54,17 @@ group('Math functions', () => {
     expect(5 - 2).toBe(3);
   });
 });
-
-// Another file
-group('Math functions', () => {
-  test('should multiply numbers correctly', () => {
-    expect(2 * 3).toBe(6);
-  });
-
-  test('should divide numbers correctly', () => {
-    expect(6 / 2).toBe(3);
-  });
-});
 ```
-
-In the above example the tests are grouped by the `Math functions` group. Even if the tests are in different files, they will be grouped together in the test results.
 
 ### Skipping Tests
 
-You can skip a test by using the `skip` method:
+You can skip a test by using the `ignore` method:
 
 ```typescript
 import { expect, group, test } from '@fragment/testing';
 
-group.skip('skipped group', () => {
-  test.skip('skipped test', () => {
+group.ignore('ignored group', () => {
+  test.ignore('ignored test', () => {
     expect.toPass();
   });
 });
@@ -126,7 +111,7 @@ group('async tests', () => {
 
 ## Mocking Functions
 
-Mocking functions is easy with the `mock` feature. You can replace real functions with mock implementations, and make assertions based on how they are called.
+Mocking functions is easy with the `fn` feature. You can replace real functions with mock implementations, and make assertions based on how they are called.
 
 ### Creating a Mock
 
@@ -141,7 +126,7 @@ expect(myMock).toHaveBeenCalled();
 
 ### Spy on Real Functions
 
-Use `spyOn` to observe calls to real functions without replacing their implementations.
+Use `spy` to observe calls to real functions without replacing their implementations.
 
 ```typescript
 import { spy } from '@fragment/testing';
@@ -152,6 +137,32 @@ const obj = {
 
 const spy = spy(obj, 'greet');
 obj.greet();
+
+expect(spy).toHaveBeenCalled();
+expect(spy).toReturn('Hello');
+```
+
+Using `spy` on standalone functions:
+
+```typescript
+function greet() {
+  return 'Hello';
+}
+
+const spy = spy(greet);
+greet();
+
+expect(spy).toHaveBeenCalled();
+expect(spy).toReturn('Hello');
+```
+
+Or in arrow functions:
+
+```typescript
+const greet = () => 'Hello';
+
+const spy = spy(greet);
+greet();
 
 expect(spy).toHaveBeenCalled();
 expect(spy).toReturn('Hello');
@@ -172,7 +183,7 @@ const fs = mock('fs', {
 expect(fs.readFileSync()).toBe('Hello');
 ```
 
-Keep in mind that the `mock` function only affects the module in which it is called. It does not affect the original module.
+Keep in mind that the `mock` function only affects the module in which it is called. It does not affect the original module. This means that the original module will still have its original implementation.
 
 ## Assertions
 
@@ -182,10 +193,12 @@ Keep in mind that the `mock` function only affects the module in which it is cal
 
 - `.toBe(value)`: Checks if two values are identical.
 - `.toEqual(value)`: Deep equality check.
-- `.toBeTruthy()`: Checks if a value is truthy.
-- `.toBeFalsy()`: Checks if a value is falsy.
+- `.toStrictEqual(value)`: Deep equality check with strict equality.
+- `.toMatch(pattern)`: Checks if a string matches a regular expression.
+- `.toMatchSnapshot()`: Compares the current output to a stored snapshot.
+- `.toThrow()`: Verifies that a function throws an error.
+- `.toThrow(error)`: Verifies that a function throws the given error.
 - `.toContain(item)`: Checks if an array or string contains an item.
-- `.toThrow(error)`: Verifies that a function throws an error.
 
 Example:
 
@@ -208,9 +221,9 @@ You can also perform snapshot testing, which compares the current output of your
 ```typescript
 import { expect, test } from '@fragment/testing';
 
-test('snapshot of a rendered component', () => {
+test('snapshot of a rendered component', async () => {
   const component = renderComponent();
-  expect(component).toMatchSnapshot();
+  await expect(component).toMatchSnapshot();
 });
 ```
 
@@ -219,9 +232,9 @@ test('snapshot of a rendered component', () => {
 ```typescript
 import { expect, test } from '@fragment/testing';
 
-test('snapshot of an error', () => {
+test('snapshot of an error', async () => {
   const error = new Error('Something went wrong');
-  expect(error).toThrowMatchingSnapshot();
+  await expect(error).toThrowMatchingSnapshot();
 });
 ```
 
@@ -309,7 +322,30 @@ Enable `watch` mode:
 
 ```bash
 deno run -A jsr://@fragment/testing/cli.ts --watch
+deno run -A jsr://@fragment/testing/cli.ts -w
 ```
+
+### Configuration
+
+You can also configure the test runner using a `configure` function:
+
+```typescript
+// file: scripts/test.ts
+import { configure } from '@fragment/testing';
+
+configure({
+  files: '**/*_test.ts',
+  watch: true,
+});
+```
+
+Then run the script:
+
+```bash
+deno run -A scripts/test.ts
+```
+
+Behind the scenes, the `configure` function sets up the test runner with the specified configuration options.
 
 ## Summary
 

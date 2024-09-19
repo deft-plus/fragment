@@ -1,5 +1,4 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
 /**
  * Implementation for {@link group} function.
@@ -31,7 +30,7 @@
  * @module
  */
 
-import { type GroupDefinition, Suite } from './api.ts';
+import { type GroupDefinition, Suite } from './_api.ts';
 
 /**
  * Registers a new group suite.

@@ -4,7 +4,7 @@ import { expect, group, test } from '@fragment/testing';
 
 import { delay } from '@std/async';
 
-import type { MemoizedSignal } from './api.ts';
+import type { MemoizedSignal } from './_api.ts';
 import { memoSignal } from './memo.ts';
 import { signal } from './signal.ts';
 import { effect } from './effect.ts';

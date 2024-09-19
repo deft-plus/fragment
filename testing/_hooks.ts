@@ -1,5 +1,4 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
 /**
  * Implements all the hooks ({@link beforeAll}, {@link afterAll}, {@link beforeEach} &
@@ -10,7 +9,7 @@
 
 import type { Awaitable } from '@fragment/utils';
 
-import { type GroupDefinition, Suite, type TestHook } from './api.ts';
+import { type GroupDefinition, Suite, type TestHook } from './_api.ts';
 
 /**
  * Adds a hook to the current suite, otherwise creates a global suite to add the hook.

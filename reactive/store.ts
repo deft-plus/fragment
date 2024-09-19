@@ -1,5 +1,4 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
 /**
  * Contains the implementation for the {@link store} function.
@@ -49,7 +48,7 @@ import {
   type ReadonlySignal,
   type SignalOptions,
   type WritableSignal,
-} from './api.ts';
+} from './_api.ts';
 import { memoSignal } from './memo.ts';
 import { signal } from './signal.ts';
 

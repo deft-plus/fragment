@@ -1,5 +1,4 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
 /**
  * Implementation for {@link test} function.
@@ -34,7 +33,7 @@
 
 import type { Awaitable } from '@fragment/utils';
 
-import { Suite, type TestDefinition } from './api.ts';
+import { Suite, type TestDefinition } from './_api.ts';
 
 /**
  * Registers a new test suite.

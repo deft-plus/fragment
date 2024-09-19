@@ -1,5 +1,4 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
 /**
  * Contains the implementation for the {@link signal} function.
@@ -53,8 +52,8 @@ import {
   type ReadonlySignal,
   type SignalOptions,
   type WritableSignal,
-} from './api.ts';
-import { ReactiveNode } from './reactive_node.ts';
+} from './_api.ts';
+import { ReactiveNode } from './_reactive_node.ts';
 import { untrackedSignal } from './untracked.ts';
 
 /**

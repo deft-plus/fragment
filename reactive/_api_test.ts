@@ -2,7 +2,7 @@
 
 import { expect, group, test } from '@fragment/testing';
 
-import { defaultEquals, isSignal, markAsSignal } from './api.ts';
+import { defaultEquals, isSignal, markAsSignal } from './_api.ts';
 import { signal } from './signal.ts';
 import { memoSignal } from './memo.ts';
 

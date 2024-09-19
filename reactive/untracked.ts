@@ -1,5 +1,4 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
 /**
  * Contains the implementation for the {@link untrackedSignal} function.
@@ -11,7 +10,7 @@
  * @module
  */
 
-import { ReactiveNode } from './reactive_node.ts';
+import { ReactiveNode } from './_reactive_node.ts';
 
 /**
  * Reads the value of a signal without creating a dependency.

@@ -2,7 +2,7 @@
 
 import { expect, group, test } from '@fragment/testing';
 
-import type { WritableSignal } from './api.ts';
+import type { WritableSignal } from './_api.ts';
 import { signal } from './signal.ts';
 import { effect } from './effect.ts';
 

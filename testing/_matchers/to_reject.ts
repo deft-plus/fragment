@@ -1,9 +1,7 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
-import type { MatcherImplOptions } from './_matcher_impl_options.ts';
-import { _assertionThrow } from './_assertion_throw.ts';
 import { AssertionError } from '@std/assert';
+import type { MatcherImplOptions } from './_matcher_impl_options.ts';
 
 /**
  * Asserts that the actual value is a promise that rejects. Optionally asserts that the error
@@ -11,6 +9,7 @@ import { AssertionError } from '@std/assert';
  *
  * @param options - The options for the matcher implementation.
  * @throws if the actual value is not a promise that rejects.
+ * @internal
  */
 export async function toRejectImpl(options: MatcherImplOptions): Promise<void> {
   const { context, actual, expected: expectedErrorMessage } = options;
@@ -35,8 +34,7 @@ export async function toRejectImpl(options: MatcherImplOptions): Promise<void> {
     error = e;
   }
 
-  _assertionThrow({
-    context: context,
+  context.throw({
     pass: thrown,
     message: {
       default: 'Expected promise to reject',
@@ -45,8 +43,7 @@ export async function toRejectImpl(options: MatcherImplOptions): Promise<void> {
   });
 
   if (expectedErrorMessage) {
-    _assertionThrow({
-      context: context,
+    context.throw({
       pass: error?.message === expectedErrorMessage,
       message: {
         default: `Expected error message not to be ${expectedErrorMessage}`,

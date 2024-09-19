@@ -1,5 +1,4 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
 /**
  * Contains the {@link ReactiveNode} class, which represents a node in the reactive graph and

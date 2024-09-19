@@ -1,5 +1,4 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
 /**
  * Contains the implementation for the {@link effect} function.
@@ -33,7 +32,7 @@
  * @module
  */
 
-import { ReactiveNode } from './reactive_node.ts';
+import { ReactiveNode } from './_reactive_node.ts';
 
 /**
  * Default no-op cleanup function.
