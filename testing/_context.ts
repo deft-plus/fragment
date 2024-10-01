@@ -3,8 +3,6 @@
 import { parseError } from './_error_parser.ts';
 import { getSourceSnippet } from './_logger.ts';
 
-// deno-lint-ignore-file no-console
-
 export interface TestContextImplOptions {
   path: string;
   rootDir: string;

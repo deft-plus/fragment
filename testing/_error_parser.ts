@@ -14,9 +14,7 @@
  * @param path - The path to the source file where the error occurred.
  * @returns The parsed error or null if the error could not be parsed.
  */
-// Rule disabled because the error parameter can be of any type.
-// deno-lint-ignore no-explicit-any, explicit-module-boundary-types
-export function parseError(error: any, path: string): ParsedError | null {
+export function parseError(error: unknown, path: string): ParsedError | null {
   if (!(error instanceof Error)) {
     return null;
   }
