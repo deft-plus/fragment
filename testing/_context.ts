@@ -1,6 +1,6 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
-import { type ParsedError, parseError } from './_error_parser.ts';
+import { parseError } from './_error_parser.ts';
 import { getSourceSnippet } from './_logger.ts';
 
 // deno-lint-ignore-file no-console
