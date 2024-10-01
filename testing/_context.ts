@@ -1,7 +1,6 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
-import { parseError } from './_error_parser.ts';
-import { getSourceSnippet } from './_logger.ts';
+import * as logger from './_logger.ts';
 
 export interface TestContextImplOptions {
   path: string;
@@ -18,6 +17,12 @@ type StepArgs =
   | [name: string, fn: (t: Deno.TestContext) => void | Promise<void>]
   | [fn: (t: Deno.TestContext) => void | Promise<void>];
 
+export interface ErroredCases {
+  name: string;
+  error: Error;
+  context: TestContextImpl;
+}
+
 export class TestContextImpl implements Deno.TestContext {
   /** The name of the test. */
   public name: string;
@@ -26,7 +31,7 @@ export class TestContextImpl implements Deno.TestContext {
   /** The parent test context. */
   public parent: TestContextImpl | undefined = undefined;
 
-  private static failedTests: { name: string; error: Error; context: TestContextImpl }[] = [];
+  private static failedTests: ErroredCases[] = [];
 
   private steps: Definition[] = [];
   private fn: (t: Deno.TestContext) => Promise<void>;
@@ -70,7 +75,7 @@ export class TestContextImpl implements Deno.TestContext {
     };
   }
 
-  public async run(): Promise<boolean> {
+  private async run(): Promise<boolean> {
     try {
       await this.fn(this);
 
@@ -129,69 +134,56 @@ export class TestContextImpl implements Deno.TestContext {
     }
   }
 
-  public static logSummary(): void {
-    if (TestContextImpl.failedTests.length === 0) {
-      console.log('All tests passed.');
-      return;
-    }
+  public static async runner(options: { rootDir?: string; files: string[] }): Promise<void> {
+    const { rootDir, files } = {
+      ...options,
+      rootDir: Deno.cwd(),
+    };
 
-    console.error('The following tests failed:');
-    console.error('');
+    console.log('');
+    console.log(`> Running tests`);
+    console.log('');
 
-    for (let i = 0; i < TestContextImpl.failedTests.length; i++) {
-      const { name, error, context } = TestContextImpl.failedTests[i];
+    for await (const path of files) {
+      console.log(`\u{276f} ${path}`);
+      console.log('');
 
-      const parsedError = parseError(error, context.origin);
-      if (parsedError) {
-        const code = getSourceSnippet(parsedError);
-        // Log parent group
-        console.error(`  \u{276f} ${context.parent?.name}`);
-        console.error(
-          `  \u{276f} ${name} \u{2014} ${parsedError.filePath}:${parsedError.line}:${parsedError.column}`,
-        );
-        console.error('');
-        console.error(code);
+      const originalTest = Deno.test;
 
-        const isLast = i === TestContextImpl.failedTests.length - 1;
-        if (!isLast) {
-          console.error('');
-          console.error('');
-        }
-      } else {
-        console.error(`  ${name}`);
+      const tests: TestContextImpl[] = [];
+
+      Object.assign(Deno, {
+        test: (...args: StepArgs) => {
+          const testOptions = TestContextImpl.definition(...args);
+
+          const testContext = new TestContextImpl({
+            path,
+            rootDir,
+            name: testOptions.name,
+            fn: testOptions.fn,
+          });
+
+          tests.push(testContext);
+
+          return Promise.resolve();
+        },
+      });
+
+      await import(path);
+
+      // Now run the tests in order
+      for (const testContext of tests) {
+        await testContext.run();
+        console.log('');
       }
-    }
-  }
 
-  public static async impl(options: TestContextImplOptions): Promise<void> {
-    const originalTest = Deno.test;
+      Object.assign(Deno, { test: originalTest });
 
-    const tests: TestContextImpl[] = [];
-
-    Object.assign(Deno, {
-      test: (...args: StepArgs) => {
-        const testOptions = TestContextImpl.definition(...args);
-
-        const testContext = new TestContextImpl({
-          ...options,
-          name: testOptions.name,
-          fn: testOptions.fn,
-        });
-
-        tests.push(testContext);
-
-        return Promise.resolve();
-      },
-    });
-
-    await import(options.path);
-
-    // Now run the tests in order
-    for (const testContext of tests) {
-      await testContext.run();
       console.log('');
     }
 
-    Object.assign(Deno, { test: originalTest });
+    logger.summary(TestContextImpl.failedTests);
+
+    console.log('');
   }
 }

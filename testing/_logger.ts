@@ -7,7 +7,8 @@
  * @module
  */
 
-import type { ParsedError } from './_error_parser.ts';
+import type { ErroredCases } from './_context.ts';
+import { type ParsedError, parseError } from './_error_parser.ts';
 
 // ANSI escape codes for terminal colors.
 const ANSI_COLORS = {
@@ -23,7 +24,7 @@ const ANSI_COLORS = {
 };
 
 // Patterns for syntax highlighting.
-const SYNTAX_PATTERNS = [
+const HIGHLIGHT_PATTERNS = [
   { regex: /\b(const|let|var|if|else|function|class|constructor)\b/g, color: ANSI_COLORS.CYAN },
   {
     regex:
@@ -46,7 +47,7 @@ const SYNTAX_PATTERNS = [
 ];
 
 // Regex to match comments (both single-line and block).
-const COMMENT_PATTERN = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/g;
+const COMMENT_REGEX = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/g;
 
 /**
  * Applies ANSI color codes to a source code string for syntax highlighting.
@@ -54,31 +55,34 @@ const COMMENT_PATTERN = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/g;
  * @param code - The source code string.
  * @returns The highlighted code.
  */
-function _colorizeCode(code: string): string {
-  const commentPlaceholders: string[] = [];
+function _highlightCode(code: string): string {
+  const commentMarkers: string[] = [];
 
   // Replace comments with placeholders to prevent highlighting inside them.
-  let filteredCode = code.replace(COMMENT_PATTERN, (match) => {
-    commentPlaceholders.push(match);
-    return `__COMMENT_${commentPlaceholders.length - 1}__`;
+  let codeWithMarkers = code.replace(COMMENT_REGEX, (match) => {
+    commentMarkers.push(match);
+    return `__COMMENT_${commentMarkers.length - 1}__`;
   });
 
   // Apply syntax highlighting for patterns.
-  SYNTAX_PATTERNS.forEach(({ regex, color }) => {
-    filteredCode = filteredCode.replace(regex, (match) => `${color}${match}${ANSI_COLORS.RESET}`);
+  HIGHLIGHT_PATTERNS.forEach(({ regex, color }) => {
+    codeWithMarkers = codeWithMarkers.replace(
+      regex,
+      (match) => `${color}${match}${ANSI_COLORS.RESET}`,
+    );
   });
 
   // Restore the comments, applying gray color.
-  filteredCode = filteredCode.replace(/__COMMENT_(\d+)__/g, (_, index) => {
-    const comment = commentPlaceholders[parseInt(index, 10)];
+  codeWithMarkers = codeWithMarkers.replace(/__COMMENT_(\d+)__/g, (_, index) => {
+    const comment = commentMarkers[parseInt(index, 10)];
     return `${ANSI_COLORS.GRAY}${comment}${ANSI_COLORS.RESET}`;
   });
 
-  return filteredCode;
+  return codeWithMarkers;
 }
 
 /** Options for customizing the source snippet retrieval. */
-interface SourceSnippetOptions {
+interface LogErrorSnippetOptions {
   /** The number of lines to include before the error line. */
   linesBefore?: number;
   /** The number of lines to include after the error line. */
@@ -92,7 +96,7 @@ interface SourceSnippetOptions {
  * @param options - Options for the number of surrounding lines to include.
  * @returns The code snippet with highlighted syntax and error pointer.
  */
-export function getSourceSnippet(error: ParsedError, options?: SourceSnippetOptions): string {
+export function errorSnippet(error: ParsedError, options?: LogErrorSnippetOptions): string {
   const { linesBefore = 2, linesAfter = 2 } = options ?? {};
   const fileContent = Deno.readTextFileSync(error.filePath);
   const lines = fileContent.split('\n');
@@ -105,11 +109,12 @@ export function getSourceSnippet(error: ParsedError, options?: SourceSnippetOpti
   // Build the snippet with highlighted lines and line numbers.
   const snippet = lines.slice(startLine, endLine).map((lineContent, index) => {
     const lineNumber = startLine + index + 1;
-    const paddedLineNumber = `${lineNumber}`.padStart(maxLineNumberWidth, ' ');
-    // const highlightedContent = _colorizeCode(lineContent);
+    const formattedLineNumber = String(lineNumber).padStart(maxLineNumberWidth, ' ');
     const highlightedContent = lineContent;
 
-    return `${lineNumber === error.line ? '>' : ' '} ${paddedLineNumber} | ${highlightedContent}`;
+    const content = `${formattedLineNumber} | ${highlightedContent}`;
+
+    return `${lineNumber === error.line ? '>' : ' '} ${content}`;
   });
 
   // Add an error pointer under the error column.
@@ -119,4 +124,39 @@ export function getSourceSnippet(error: ParsedError, options?: SourceSnippetOpti
   snippet.splice(errorLineIndex + 1, 0, pointerLine); // Insert pointer below error line.
 
   return snippet.join('\n');
+}
+
+/** Logs a summary of the test results to the console. */
+export function summary(erroredCases: ErroredCases[]): void {
+  if (erroredCases.length === 0) {
+    console.log('All tests passed.');
+    return;
+  }
+
+  console.error('The following tests failed:');
+  console.error('');
+
+  for (let i = 0; i < erroredCases.length; i++) {
+    const { name, error, context } = erroredCases[i];
+
+    const parsedError = parseError(error, context.origin);
+    if (parsedError) {
+      const code = errorSnippet(parsedError);
+      // Log parent group
+      console.error(`  \u{276f} ${context.parent?.name}`);
+      console.error(
+        `  \u{276f} ${name} \u{2014} ${parsedError.filePath}:${parsedError.line}:${parsedError.column}`,
+      );
+      console.error('');
+      console.error(code);
+
+      const isLast = i === erroredCases.length - 1;
+      if (!isLast) {
+        console.error('');
+        console.error('');
+      }
+    } else {
+      console.error(`  ${name}`);
+    }
+  }
 }
