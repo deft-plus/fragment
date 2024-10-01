@@ -9,7 +9,7 @@
 
 import type { ParsedError } from './_error_parser.ts';
 
-// ANSI color codes for syntax highlighting.
+// ANSI escape codes for terminal colors.
 const ANSI_COLORS = {
   RESET: '\x1b[0m',
   RED: '\x1b[31m',
@@ -22,72 +22,53 @@ const ANSI_COLORS = {
   GRAY: '\x1b[90m',
 };
 
-// Regular expressions for syntax highlighting patterns.
+// Patterns for syntax highlighting.
 const SYNTAX_PATTERNS = [
-  // Keywords (e.g., const, let, if).
   { regex: /\b(const|let|var|if|else|function|class|constructor)\b/g, color: ANSI_COLORS.CYAN },
-
-  // JavaScript reserved words (e.g., return, new, async).
   {
     regex:
       /\b(return|of|new|this|extends|implements|interface|abstract|static|public|private|protected|typeof|instanceof|switch|case|break|default|continue|try|catch|finally|throw|import|export|from|as|await|async|yield|void)\b/g,
     color: ANSI_COLORS.RED,
   },
-
-  // Boolean literals (true, false).
   { regex: /\b(true|false)\b/g, color: ANSI_COLORS.CYAN },
-
-  // Null and undefined literals.
   { regex: /\b(null|undefined)\b/g, color: ANSI_COLORS.RED },
-
-  // Numeric values (integers and floats).
   { regex: /\b\d+(\.\d+)?\b/g, color: ANSI_COLORS.MAGENTA },
-
-  // String literals (single-quoted, double-quoted, template literals).
   { regex: /('[^']*'|"[^"]*"|`[^`]*`)/g, color: ANSI_COLORS.YELLOW },
-
-  // Arrow functions (e.g., =>).
   { regex: /=>/g, color: ANSI_COLORS.CYAN },
-
-  // Function names (e.g., console.log(), myFunction()).
   { regex: /\b(\w+)\s*(?=\()/g, color: ANSI_COLORS.GREEN },
-
-  // Class and constructor names (e.g., new MyClass()).
   { regex: /\b[A-Z][a-zA-Z0-9_]*\b/g, color: ANSI_COLORS.BLUE },
-
-  // Operators (e.g., +, -, *, /, ===).
   {
     regex:
       /(?<!\=\>)\b(\+|\-|\*|\/|\%|\=\=\=?|\!\=|\<\=?|\>\=?|\&\&|\|\||\!\=|\!\!|\+=|\-=|\*=|\/=|%|\?\:)\b/g,
     color: ANSI_COLORS.RED,
   },
-
-  // Variable identifiers (excluding keywords and function names).
   { regex: /\b[a-zA-Z_$][a-zA-Z0-9_$]*\b/g, color: ANSI_COLORS.BLUE },
 ];
 
-// Regular expression to match comments.
+// Regex to match comments (both single-line and block).
 const COMMENT_PATTERN = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/g;
 
 /**
- * Highlights syntax in a given code string.
+ * Applies ANSI color codes to a source code string for syntax highlighting.
  *
- * @param code - The source code to be highlighted.
- * @returns The code string with syntax highlighting applied.
+ * @param code - The source code string.
+ * @returns The highlighted code.
  */
 function _colorizeCode(code: string): string {
-  // Comments are treated separately to avoid syntax highlighting within them.
   const commentPlaceholders: string[] = [];
 
+  // Replace comments with placeholders to prevent highlighting inside them.
   let filteredCode = code.replace(COMMENT_PATTERN, (match) => {
     commentPlaceholders.push(match);
     return `__COMMENT_${commentPlaceholders.length - 1}__`;
   });
 
+  // Apply syntax highlighting for patterns.
   SYNTAX_PATTERNS.forEach(({ regex, color }) => {
     filteredCode = filteredCode.replace(regex, (match) => `${color}${match}${ANSI_COLORS.RESET}`);
   });
 
+  // Restore the comments, applying gray color.
   filteredCode = filteredCode.replace(/__COMMENT_(\d+)__/g, (_, index) => {
     const comment = commentPlaceholders[parseInt(index, 10)];
     return `${ANSI_COLORS.GRAY}${comment}${ANSI_COLORS.RESET}`;
@@ -96,7 +77,7 @@ function _colorizeCode(code: string): string {
   return filteredCode;
 }
 
-/** Options for retrieving a source code snippet. */
+/** Options for customizing the source snippet retrieval. */
 interface SourceSnippetOptions {
   /** The number of lines to include before the error line. */
   linesBefore?: number;
@@ -105,41 +86,37 @@ interface SourceSnippetOptions {
 }
 
 /**
- * Retrieves a snippet of source code around a specific line and column, highlighting the line and
- * indicating the error position with a pointer and color.
+ * Retrieves a highlighted code snippet around an error location, adding a pointer to the error.
  *
- * @param error - The parsed error object containing the file path, line, and column.
- * @param options - The options for retrieving the source snippet.
- * @returns The source code snippet with syntax highlighting and an indicator for the error.
+ * @param error - Object containing file path, line, and column details of the error.
+ * @param options - Options for the number of surrounding lines to include.
+ * @returns The code snippet with highlighted syntax and error pointer.
  */
 export function getSourceSnippet(error: ParsedError, options?: SourceSnippetOptions): string {
   const { linesBefore = 2, linesAfter = 2 } = options ?? {};
-
   const fileContent = Deno.readTextFileSync(error.filePath);
   const lines = fileContent.split('\n');
 
-  // Calculate the range of lines to include in the snippet.
+  // Determine the range of lines to display.
   const startLine = Math.max(error.line - 1 - linesBefore, 0);
   const endLine = Math.min(error.line + linesAfter, lines.length);
-  const maxLineNumberWidth = (endLine + 1).toString().length;
+  const maxLineNumberWidth = String(endLine + 1).length;
 
-  // Create the snippet with syntax highlighting and line numbers.
+  // Build the snippet with highlighted lines and line numbers.
   const snippet = lines.slice(startLine, endLine).map((lineContent, index) => {
     const lineNumber = startLine + index + 1;
-    const paddedLineNumber = String(lineNumber).padStart(maxLineNumberWidth, ' ');
+    const paddedLineNumber = `${lineNumber}`.padStart(maxLineNumberWidth, ' ');
     // const highlightedContent = _colorizeCode(lineContent);
     const highlightedContent = lineContent;
 
     return `${lineNumber === error.line ? '>' : ' '} ${paddedLineNumber} | ${highlightedContent}`;
   });
 
-  // Add an indicator under the error column.
+  // Add an error pointer under the error column.
   const errorLineIndex = error.line - startLine - 1;
-  // Offset by the line number, the pipe character, and the space after the pipe.
-  const offset = error.column + maxLineNumberWidth + 4;
-  const pointerLine = `${' '.repeat(offset)}${ANSI_COLORS.RED}^${ANSI_COLORS.RESET}`;
-  // Insert the pointer line after the error line.
-  snippet.splice(errorLineIndex + 1, 0, pointerLine);
+  const pointerOffset = error.column + maxLineNumberWidth + 4; // Line number + ' | ' prefix.
+  const pointerLine = `${' '.repeat(pointerOffset)}${ANSI_COLORS.RED}^${ANSI_COLORS.RESET}`;
+  snippet.splice(errorLineIndex + 1, 0, pointerLine); // Insert pointer below error line.
 
   return snippet.join('\n');
 }
