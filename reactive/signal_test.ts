@@ -60,7 +60,7 @@ group('reactive / signal()', () => {
       key === 'set' || key === 'update' || key === 'mutate'
     );
 
-    expect(writableKeys).toBeUndefined();
+    expect(writableKeys).toBe(undefined);
   });
 
   test('should subscribe to readonly signals', () => {
@@ -78,7 +78,7 @@ group('reactive / signal()', () => {
       key === 'set' || key === 'update' || key === 'mutate'
     );
 
-    expect(writableKeys).toBeUndefined();
+    expect(writableKeys).toBe(undefined);
 
     privateCounter.set(1);
 

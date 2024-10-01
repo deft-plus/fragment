@@ -1,4 +1,5 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
+// TODO(@miguelbogota): Fix the colorizeCode function since it is not working as expected.
 
 /**
  * Implements the logger for the testing runner.
@@ -6,7 +7,7 @@
  * @module
  */
 
-// TODO(@miguelbogota): Fix the colorizeCode function since it is not working as expected.
+import type { ParsedError } from './_error_parser.ts';
 
 // ANSI color codes for syntax highlighting.
 const ANSI_COLORS = {
@@ -74,7 +75,7 @@ const COMMENT_PATTERN = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/g;
  * @param code - The source code to be highlighted.
  * @returns The code string with syntax highlighting applied.
  */
-function colorizeCode(code: string): string {
+function _colorizeCode(code: string): string {
   // Comments are treated separately to avoid syntax highlighting within them.
   const commentPlaceholders: string[] = [];
 
@@ -95,16 +96,6 @@ function colorizeCode(code: string): string {
   return filteredCode;
 }
 
-/** Represents an error that has been parsed from a log message. */
-interface ParsedError {
-  /** The path to the source file where the error occurred. */
-  filePath: string;
-  /** The line number where the error occurred. */
-  line: number;
-  /** The column number where the error occurred. */
-  column: number;
-}
-
 /** Options for retrieving a source code snippet. */
 interface SourceSnippetOptions {
   /** The number of lines to include before the error line. */
@@ -114,13 +105,12 @@ interface SourceSnippetOptions {
 }
 
 /**
- * Retrieves a snippet of source code around a specific line and column,
- * highlighting the line and indicating the error position.
+ * Retrieves a snippet of source code around a specific line and column, highlighting the line and
+ * indicating the error position with a pointer and color.
  *
- * @param filePath - The path to the source file.
- * @param line - The line number where the error occurred.
- * @param column - The column number where the error occurred.
- * @returns The formatted snippet with syntax highlighting and an error pointer.
+ * @param error - The parsed error object containing the file path, line, and column.
+ * @param options - The options for retrieving the source snippet.
+ * @returns The source code snippet with syntax highlighting and an indicator for the error.
  */
 export function getSourceSnippet(error: ParsedError, options?: SourceSnippetOptions): string {
   const { linesBefore = 2, linesAfter = 2 } = options ?? {};
@@ -129,16 +119,16 @@ export function getSourceSnippet(error: ParsedError, options?: SourceSnippetOpti
   const lines = fileContent.split('\n');
 
   // Calculate the range of lines to include in the snippet.
-
   const startLine = Math.max(error.line - 1 - linesBefore, 0);
   const endLine = Math.min(error.line + linesAfter, lines.length);
   const maxLineNumberWidth = (endLine + 1).toString().length;
 
-  // Create the snippet with syntax highlighting.
+  // Create the snippet with syntax highlighting and line numbers.
   const snippet = lines.slice(startLine, endLine).map((lineContent, index) => {
     const lineNumber = startLine + index + 1;
     const paddedLineNumber = String(lineNumber).padStart(maxLineNumberWidth, ' ');
-    const highlightedContent = colorizeCode(lineContent);
+    // const highlightedContent = _colorizeCode(lineContent);
+    const highlightedContent = lineContent;
 
     return `${lineNumber === error.line ? '>' : ' '} ${paddedLineNumber} | ${highlightedContent}`;
   });
@@ -148,7 +138,6 @@ export function getSourceSnippet(error: ParsedError, options?: SourceSnippetOpti
   // Offset by the line number, the pipe character, and the space after the pipe.
   const offset = error.column + maxLineNumberWidth + 4;
   const pointerLine = `${' '.repeat(offset)}${ANSI_COLORS.RED}^${ANSI_COLORS.RESET}`;
-
   // Insert the pointer line after the error line.
   snippet.splice(errorLineIndex + 1, 0, pointerLine);
 

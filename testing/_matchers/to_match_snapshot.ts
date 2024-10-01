@@ -23,5 +23,12 @@ export async function toMatchSnapshotImpl(options: MatcherImplOptions<undefined>
     });
   }
 
+  // Add file to path
+  const prevOrigin = context.t.origin;
+  context.t.origin = `file://${prevOrigin}`;
+
   await assertSnapshot(context.t, actual);
+
+  // Reset origin
+  context.t.origin = prevOrigin;
 }

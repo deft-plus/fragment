@@ -55,5 +55,12 @@ export async function toRejectMatchingSnapshotImpl(
     },
   });
 
+  // Add file to path
+  const prevOrigin = context.t.origin;
+  context.t.origin = `file://${prevOrigin}`;
+
   await assertSnapshot(context.t, error?.message);
+
+  // Reset origin
+  context.t.origin = prevOrigin;
 }

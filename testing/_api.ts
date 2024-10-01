@@ -28,7 +28,10 @@ export interface SuiteHook {
   fn: () => Awaitable<void>;
 }
 
-/** Options for defining a test suite group. */
+/**
+ * Options for defining a test suite group.
+ * @internal
+ */
 export interface GroupDefinition extends Omit<Deno.TestDefinition, 'fn'> {
   /** The main function to define the group suite. */
   fn: () => void;
@@ -38,7 +41,10 @@ export interface GroupDefinition extends Omit<Deno.TestDefinition, 'fn'> {
   hooks: SuiteHook[];
 }
 
-/** Options for defining an individual test case. */
+/**
+ * Options for defining an individual test case.
+ * @internal
+ */
 export interface TestDefinition extends Omit<Deno.TestDefinition, 'fn'> {
   /** The main function to define the test case. */
   fn: () => Awaitable<void>;
@@ -46,7 +52,10 @@ export interface TestDefinition extends Omit<Deno.TestDefinition, 'fn'> {
   suite?: SuiteIdentifier;
 }
 
-/** Represents a suite of tests. */
+/**
+ * Represents a suite of tests.
+ * @internal
+ */
 export class Suite implements SuiteIdentifier {
   /** Keeps track of how many test suites are running. */
   public static runningCount = 0;
