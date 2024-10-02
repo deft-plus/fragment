@@ -9,50 +9,6 @@
 import type { Awaitable } from '@fragment/utils';
 
 /**
- * Represents a group of tests within a suite.
- * @internal
- */
-abstract class SuiteIdentifier {
-  /** Unique identifier for the suite. */
-  public abstract identifier: symbol;
-}
-
-/** Defines the possible types of test hooks. */
-export type SuiteHookType = 'beforeAll' | 'afterAll' | 'beforeEach' | 'afterEach';
-
-/** Describes a hook to be executed before or after tests. */
-export interface SuiteHook {
-  /** The type of the hook (before/after). */
-  type: SuiteHookType;
-  /** The action to be performed by the hook. */
-  fn: () => Awaitable<void>;
-}
-
-/**
- * Options for defining a test suite group.
- * @internal
- */
-export interface GroupDefinition extends Omit<Deno.TestDefinition, 'fn'> {
-  /** The main function to define the group suite. */
-  fn: () => void;
-  /** Optional parent suite for the group. */
-  suite?: SuiteIdentifier;
-  /** Hooks for setting up and tearing down tests. */
-  hooks: SuiteHook[];
-}
-
-/**
- * Options for defining an individual test case.
- * @internal
- */
-export interface TestDefinition extends Omit<Deno.TestDefinition, 'fn'> {
-  /** The main function to define the test case. */
-  fn: () => Awaitable<void>;
-  /** Optional parent suite for the test. */
-  suite?: SuiteIdentifier;
-}
-
-/**
  * Represents a suite of tests.
  * @internal
  */
@@ -146,9 +102,7 @@ export class Suite implements SuiteIdentifier {
     });
   }
 
-  /**
-   * Resets the suite state, used for testing.
-   */
+  /** Resets the suite state, used for testing. */
   public static reset(): void {
     Suite.runningCount = 0;
     Suite.started = false;
@@ -299,4 +253,48 @@ export class Suite implements SuiteIdentifier {
       await fn();
     }
   }
+}
+
+/**
+ * Represents a group of tests within a suite.
+ * @internal
+ */
+abstract class SuiteIdentifier {
+  /** Unique identifier for the suite. */
+  public abstract identifier: symbol;
+}
+
+/** Defines the possible types of test hooks. */
+export type SuiteHookType = 'beforeAll' | 'afterAll' | 'beforeEach' | 'afterEach';
+
+/** Describes a hook to be executed before or after tests. */
+export interface SuiteHook {
+  /** The type of the hook (before/after). */
+  type: SuiteHookType;
+  /** The action to be performed by the hook. */
+  fn: () => Awaitable<void>;
+}
+
+/**
+ * Options for defining a test suite group.
+ * @internal
+ */
+export interface GroupDefinition extends Omit<Deno.TestDefinition, 'fn'> {
+  /** The main function to define the group suite. */
+  fn: () => void;
+  /** Optional parent suite for the group. */
+  suite?: SuiteIdentifier;
+  /** Hooks for setting up and tearing down tests. */
+  hooks: SuiteHook[];
+}
+
+/**
+ * Options for defining an individual test case.
+ * @internal
+ */
+export interface TestDefinition extends Omit<Deno.TestDefinition, 'fn'> {
+  /** The main function to define the test case. */
+  fn: () => Awaitable<void>;
+  /** Optional parent suite for the test. */
+  suite?: SuiteIdentifier;
 }

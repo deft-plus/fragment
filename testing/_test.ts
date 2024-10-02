@@ -33,7 +33,7 @@
 
 import type { Awaitable } from '@fragment/utils';
 
-import { Suite, type TestDefinition } from './_api.ts';
+import { Suite, type TestDefinition } from './_suite.ts';
 
 /**
  * Registers a new test suite.

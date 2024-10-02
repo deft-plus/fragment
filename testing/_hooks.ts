@@ -9,7 +9,7 @@
 
 import type { Awaitable } from '@fragment/utils';
 
-import { type GroupDefinition, Suite, type SuiteHook } from './_api.ts';
+import { type GroupDefinition, Suite, type SuiteHook } from './_suite.ts';
 
 /**
  * Adds a hook to the current suite, otherwise creates a global suite to add the hook.

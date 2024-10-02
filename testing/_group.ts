@@ -30,7 +30,7 @@
  * @module
  */
 
-import { type GroupDefinition, Suite } from './_api.ts';
+import { type GroupDefinition, Suite } from './_suite.ts';
 
 /**
  * Registers a new group suite.

@@ -16,7 +16,7 @@
 import { AssertionError } from '@std/assert';
 import type { ExpectContext } from './_matchers/_context.ts';
 import type { MatcherImplOptions } from './_matchers/_matcher_impl_options.ts';
-import { Suite } from './_api.ts';
+import { Suite } from './_suite.ts';
 // Matchers implementations.
 import { toBeOneOfImpl } from './_matchers/to_be_one_of.ts';
 import { toEqualImpl } from './_matchers/to_equal.ts';
