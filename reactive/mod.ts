@@ -1,5 +1,4 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
 export {
   type MemoizedSignal,
@@ -9,7 +8,7 @@ export {
   type SignalOptions,
   type SignalType,
   type WritableSignal,
-} from './api.ts';
+} from './_api.ts';
 export {
   effect,
   type EffectCallback,

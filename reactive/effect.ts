@@ -1,5 +1,4 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
 /**
  * Contains the implementation for the {@link effect} function.
@@ -33,12 +32,10 @@
  * @module
  */
 
-import { ReactiveNode } from './reactive_node.ts';
+import { ReactiveNode } from './_reactive_node.ts';
 
 /**
  * Default no-op cleanup function.
- *
- * @returns void
  */
 const NOOP_CLEANUP: EffectCleanup = () => {};
 
@@ -92,11 +89,7 @@ effect.initial = function (callback: EffectCallback): EffectRef {
   return effect(callback);
 };
 
-/**
- * Stop all active effects.
- *
- * @returns void
- */
+/** Stop all active effects. */
 effect.resetEffects = (): void => EffectImpl.resetEffects();
 
 /**
@@ -125,30 +118,18 @@ class EffectImpl extends ReactiveNode {
   /** Property to track the current tracking version. */
   private cleanupFn = NOOP_CLEANUP;
 
-  /**
-   * Stop all active effects.
-   *
-   * @returns void
-   */
+  /** Stop all active effects. */
   public static resetEffects(): void {
     EffectImpl.executionQueue.clear();
     EffectImpl.activeEffects.clear();
   }
 
-  /**
-   * Called when a dependency may have changed.
-   *
-   * @returns void
-   */
+  /** Called when a dependency may have changed. */
   protected override onDependencyChange(): void {
     this.notify();
   }
 
-  /**
-   * Called when a consumer checks if the producer's value has changed.
-   *
-   * @returns void
-   */
+  /** Called when a consumer checks if the producer's value has changed. */
   protected override onProducerMayChanged(): void {
     // Watches don't update producer values.
   }
@@ -173,11 +154,7 @@ class EffectImpl extends ReactiveNode {
     return { destroy };
   }
 
-  /**
-   * Notify that this watch needs to be re-scheduled.
-   *
-   * @returns void
-   */
+  /** Notify that this watch needs to be re-scheduled. */
   private notify(): void {
     if (!this.dirty) {
       this.schedule();
@@ -189,8 +166,6 @@ class EffectImpl extends ReactiveNode {
   /**
    * Executes the reactive expression within the context of this `Watch` instance. Should be called
    * by the scheduling function when `Watch.notify()` is triggered.
-   *
-   * @returns void
    */
   private run(): void {
     this.dirty = false;
@@ -210,20 +185,12 @@ class EffectImpl extends ReactiveNode {
     }
   }
 
-  /**
-   * Run the cleanup function.
-   *
-   * @returns void
-   */
+  /** Run the cleanup function. */
   private cleanup(): void {
     this.cleanupFn();
   }
 
-  /**
-   * Queue an effect for execution.
-   *
-   * @returns void
-   */
+  /** Queue an effect for execution. */
   private schedule(): void {
     if (EffectImpl.executionQueue.has(this) || !EffectImpl.activeEffects.has(this)) {
       return;
@@ -237,11 +204,7 @@ class EffectImpl extends ReactiveNode {
     }
   }
 
-  /**
-   * Execute all queued effects.
-   *
-   * @returns void
-   */
+  /** Execute all queued effects. */
   private executeQueue(): void {
     for (const watch of EffectImpl.executionQueue) {
       EffectImpl.executionQueue.delete(watch);
@@ -261,11 +224,7 @@ export type EffectCallback = () => void | EffectCleanup;
 
 /** Reference to the reactive effect created. */
 export interface EffectRef {
-  /**
-   * Stop the effect and remove it from execution.
-   *
-   * @returns void
-   */
+  /** Stop the effect and remove it from execution. */
   destroy: () => void;
 }
 
@@ -277,14 +236,8 @@ export type EffectHandler = (callback: EffectCallback) => EffectRef;
 
 /** A factory function for creating, stopping, and resetting effects. */
 export interface EffectFactory extends EffectHandler {
-  /**
-   * Stop all active effects.
-   *
-   * @returns void
-   */
+  /** Stop all active effects. */
   resetEffects: () => void;
-  /**
-   * Immediately run the effect and then re-schedule it on changes.
-   */
+  /** Immediately run the effect and then re-schedule it on changes. */
   initial: EffectHandler;
 }

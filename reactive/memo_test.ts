@@ -1,16 +1,15 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
-import { describe, test } from '@std/testing/bdd';
-import { expect } from '@std/expect';
+import { expect, group, test } from '@fragment/testing';
 
 import { delay } from '@std/async';
 
-import type { MemoizedSignal } from './api.ts';
+import type { MemoizedSignal } from './_api.ts';
 import { memoSignal } from './memo.ts';
 import { signal } from './signal.ts';
 import { effect } from './effect.ts';
 
-describe('reactive / memoSignal()', () => {
+group('reactive / memoSignal()', () => {
   test('should allow to create a memoized signal', () => {
     const counter = signal(0);
     const doubleCounter = memoSignal(() => counter() * 2);

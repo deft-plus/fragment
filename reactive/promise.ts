@@ -1,5 +1,4 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
 /**
  * Contains the implementation for the {@link signalFromPromise} function.
@@ -24,7 +23,7 @@
  * @module
  */
 
-import type { ReadonlySignal } from './api.ts';
+import type { ReadonlySignal } from './_api.ts';
 import { signal } from './signal.ts';
 
 /**

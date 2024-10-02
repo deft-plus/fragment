@@ -1,0 +1,17 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@fragment/utils",
+  "version": "0.1.2",
+  "description": "🚧 General-purpose utilities",
+  "keywords": ["deno", "utils"],
+  "license": "Apache-2.0",
+  "author": "Deft+",
+  "homepage": "https://github.com/deft-plus/fragment/utils",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deft-plus/fragment.git"
+  },
+  "exports": {
+    ".": "./mod.ts"
+  }
+}

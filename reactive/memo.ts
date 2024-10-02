@@ -1,5 +1,4 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
 /**
  * Contains the implementation for the {@link memoSignal} function.
@@ -28,8 +27,8 @@ import {
   markAsSignal,
   type MemoizedSignal,
   type MemoizedSignalOptions,
-} from './api.ts';
-import { ReactiveNode } from './reactive_node.ts';
+} from './_api.ts';
+import { ReactiveNode } from './_reactive_node.ts';
 import { untrackedSignal } from './untracked.ts';
 
 /**
@@ -111,11 +110,7 @@ class MemoizedSignalImp<T> extends ReactiveNode {
   /** Flag indicating if the value is stale. */
   private stale = true;
 
-  /**
-   * Called when a dependency may have changed.
-   *
-   * @returns void
-   */
+  /** Called when a dependency may have changed. */
   protected override onDependencyChange(): void {
     if (this.stale) {
       return; // If already stale, no need to reprocess. This also allow batching changes.
@@ -125,11 +120,7 @@ class MemoizedSignalImp<T> extends ReactiveNode {
     this.notifyConsumers(); // Notify consumers about potential change.
   }
 
-  /**
-   * Called when a consumer checks if the producer's value has changed.
-   *
-   * @returns void
-   */
+  /** Called when a consumer checks if the producer's value has changed. */
   protected override onProducerMayChanged(): void {
     if (!this.stale) {
       return; // If not stale, no update needed.
@@ -183,11 +174,7 @@ class MemoizedSignalImp<T> extends ReactiveNode {
     return `[MemoSignal: ${JSON.stringify(this.signal())}]`;
   }
 
-  /**
-   * Recomputes the value if needed.
-   *
-   * @returns void
-   */
+  /** Recomputes the value if needed. */
   private recomputeValue(): void {
     if (this.value === COMPUTING) {
       throw new Error('Cycle detected in computations.'); // Prevent infinite loops.

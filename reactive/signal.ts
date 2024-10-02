@@ -1,5 +1,4 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
-// This module is browser compatible.
 
 /**
  * Contains the implementation for the {@link signal} function.
@@ -53,8 +52,8 @@ import {
   type ReadonlySignal,
   type SignalOptions,
   type WritableSignal,
-} from './api.ts';
-import { ReactiveNode } from './reactive_node.ts';
+} from './_api.ts';
+import { ReactiveNode } from './_reactive_node.ts';
 import { untrackedSignal } from './untracked.ts';
 
 /**
@@ -140,20 +139,12 @@ class WritableSignalImpl<T> extends ReactiveNode {
   /** The current value of the signal as read-only. */
   private readonlySignal?: ReadonlySignal<T>;
 
-  /**
-   * Called when a dependency may have changed.
-   *
-   * @returns void
-   */
+  /** Called when a dependency may have changed. */
   protected override onDependencyChange(): void {
     // Writable signals are not consumers, so this doesn't apply.
   }
 
-  /**
-   * Called when a consumer checks if the producer's value has changed.
-   *
-   * @returns void
-   */
+  /** Called when a consumer checks if the producer's value has changed. */
   protected override onProducerMayChanged(): void {
     // Value versions are always up-to-date for writable signals.
   }
@@ -162,7 +153,6 @@ class WritableSignalImpl<T> extends ReactiveNode {
    * Set a new value for the signal and notify consumers if changed.
    *
    * @param newValue - The new value to set.
-   * @returns void
    */
   public set(newValue: T): void {
     if (!this.options.equal(this.value, newValue)) {
@@ -177,7 +167,6 @@ class WritableSignalImpl<T> extends ReactiveNode {
    * Update the signal's value using the provided function.
    *
    * @param updater - The function to update the value.
-   * @returns void
    */
   public update(updater: (value: T) => T): void {
     this.set(updater(this.value));
@@ -187,7 +176,6 @@ class WritableSignalImpl<T> extends ReactiveNode {
    * Apply a function to mutate the signal's value in-place.
    *
    * @param mutator - The function to mutate the value.
-   * @returns void
    */
   public mutate(mutator: (value: T) => void): void {
     mutator(this.value);

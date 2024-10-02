@@ -44,3 +44,4 @@ jobs:
           scopes: |
             internal
             reactive(/unstable)?
+            testing(/unstable)?

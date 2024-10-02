@@ -1,14 +1,13 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
-import { describe, test } from '@std/testing/bdd';
-import { expect } from '@std/expect';
+import { expect, group, test } from '@fragment/testing';
 
 import { delay } from '@std/async';
 
 import { effect } from './effect.ts';
 import { signal } from './signal.ts';
 
-describe('reactive / effect()', () => {
+group('reactive / effect()', () => {
   test('should listen for signal changes and trigger effects', async () => {
     const value = signal(0);
     const changes: number[] = [];

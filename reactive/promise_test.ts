@@ -1,13 +1,12 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
-import { describe, test } from '@std/testing/bdd';
-import { expect } from '@std/expect';
+import { expect, group, test } from '@fragment/testing';
 
 import { delay } from '@std/async';
 
 import { signalFromPromise } from './promise.ts';
 
-describe('reactive / signalFromPromise()', () => {
+group('reactive / signalFromPromise()', () => {
   test('should create a signal from a promise function', async () => {
     const promise1 = signalFromPromise(() => delay(10).then(() => 'Hello, World!'));
     const promise2 = signalFromPromise(delay(10).then(() => 'Hello, World!'));

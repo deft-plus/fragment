@@ -1,9 +1,8 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
-import { describe, test } from '@std/testing/bdd';
-import { expect } from '@std/expect';
+import { expect, group, test } from '@fragment/testing';
 
-import type { WritableSignal } from './api.ts';
+import type { WritableSignal } from './_api.ts';
 import { signal } from './signal.ts';
 import { effect } from './effect.ts';
 
@@ -12,7 +11,7 @@ type TestingUser = {
   age: number;
 };
 
-describe('reactive / signal()', () => {
+group('reactive / signal()', () => {
   test('should create a signal with the given initial value', () => {
     const counter = signal(0);
 
@@ -61,7 +60,7 @@ describe('reactive / signal()', () => {
       key === 'set' || key === 'update' || key === 'mutate'
     );
 
-    expect(writableKeys).toBeUndefined();
+    expect(writableKeys).toBe(undefined);
   });
 
   test('should subscribe to readonly signals', () => {
@@ -79,7 +78,7 @@ describe('reactive / signal()', () => {
       key === 'set' || key === 'update' || key === 'mutate'
     );
 
-    expect(writableKeys).toBeUndefined();
+    expect(writableKeys).toBe(undefined);
 
     privateCounter.set(1);
 
