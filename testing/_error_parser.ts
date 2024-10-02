@@ -2,7 +2,7 @@
 
 /**
  * This module contains the error parser for the testing runner. This is useful for parsing errors
- * and extracting useful information from them.
+ * and extracting useful information from them to display in the logs.
  *
  * @module
  */
@@ -13,6 +13,7 @@
  * @param error - The error to parse.
  * @param path - The path to the source file where the error occurred.
  * @returns The parsed error or null if the error could not be parsed.
+ * @internal
  */
 export function parseError(error: unknown, path: string): ParsedError | null {
   if (!(error instanceof Error)) {
@@ -47,7 +48,10 @@ export function parseError(error: unknown, path: string): ParsedError | null {
   };
 }
 
-/** Represents an error that has been parsed from a log message. */
+/**
+ * Represents an error that has been parsed from a log message.
+ * @internal
+ */
 export interface ParsedError {
   /** The path to the source file where the error occurred. */
   filePath: string;

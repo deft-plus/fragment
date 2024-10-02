@@ -1,4 +1,8 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
+
+// Rule disabled since the logger needs to be able to log to the console.
+// deno-lint-ignore-file no-console
+
 // TODO(@miguelbogota): Fix the colorizeCode function since it is not working as expected.
 
 /**
@@ -54,6 +58,7 @@ const COMMENT_REGEX = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/g;
  *
  * @param code - The source code string.
  * @returns The highlighted code.
+ * @internal
  */
 function _highlightCode(code: string): string {
   const commentMarkers: string[] = [];
@@ -81,7 +86,10 @@ function _highlightCode(code: string): string {
   return codeWithMarkers;
 }
 
-/** Options for customizing the source snippet retrieval. */
+/**
+ * Options for customizing the source snippet retrieval.
+ * @internal
+ */
 interface LogErrorSnippetOptions {
   /** The number of lines to include before the error line. */
   linesBefore?: number;
@@ -95,6 +103,7 @@ interface LogErrorSnippetOptions {
  * @param error - Object containing file path, line, and column details of the error.
  * @param options - Options for the number of surrounding lines to include.
  * @returns The code snippet with highlighted syntax and error pointer.
+ * @internal
  */
 export function errorSnippet(error: ParsedError, options?: LogErrorSnippetOptions): string {
   const { linesBefore = 2, linesAfter = 2 } = options ?? {};
@@ -126,7 +135,12 @@ export function errorSnippet(error: ParsedError, options?: LogErrorSnippetOption
   return snippet.join('\n');
 }
 
-/** Logs a summary of the test results to the console. */
+/**
+ * Logs a summary of the test results to the console.
+ *
+ * @param erroredCases - The list of errored test cases.
+ * @internal
+ */
 export function summary(erroredCases: ErroredCases[]): void {
   if (erroredCases.length === 0) {
     console.log('All tests passed.');
@@ -159,4 +173,6 @@ export function summary(erroredCases: ErroredCases[]): void {
       console.error(`  ${name}`);
     }
   }
+
+  console.error('');
 }

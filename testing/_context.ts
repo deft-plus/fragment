@@ -1,5 +1,15 @@
 // Copyright the Deft+ authors. All rights reserved. Apache-2.0 license
 
+/**
+ * This module implements a test context for the testing runner, which allows to use the built-in
+ * Deno test runner when running tests.
+ *
+ * The test context just mocks the Deno test runner and makes the logs more readable, simpler, and
+ * more organized.
+ *
+ * @module
+ */
+
 import * as logger from './_logger.ts';
 
 export interface TestContextImplOptions {
@@ -132,16 +142,14 @@ export class TestContextImpl implements Deno.TestContext {
     } else {
       console.error(`${indent}\u{00d7} ${this.name}: ${this.error?.message}`);
     }
+    console.log('');
   }
 
-  public static async runner(options: { rootDir?: string; files: string[] }): Promise<void> {
-    const { rootDir, files } = {
-      ...options,
-      rootDir: Deno.cwd(),
-    };
+  public static async runner(options: { rootDir: string; files: string[] }): Promise<void> {
+    const { rootDir, files } = options;
 
     console.log('');
-    console.log(`> Running tests`);
+    console.log('> Running tests');
     console.log('');
 
     for await (const path of files) {
@@ -174,7 +182,6 @@ export class TestContextImpl implements Deno.TestContext {
       // Now run the tests in order
       for (const testContext of tests) {
         await testContext.run();
-        console.log('');
       }
 
       Object.assign(Deno, { test: originalTest });
@@ -183,7 +190,5 @@ export class TestContextImpl implements Deno.TestContext {
     }
 
     logger.summary(TestContextImpl.failedTests);
-
-    console.log('');
   }
 }
