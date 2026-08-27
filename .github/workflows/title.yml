@@ -19,15 +19,32 @@ jobs:
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          pattern='^((\[unstable\] (BREAKING|deprecation))|BREAKING|deprecation|feature|release|fix|docs|refactor|perf|test|ci|chore|revert)\([a-z][a-z0-9-]*\): [a-z].*$'
+          # Add each top-level module directory to this array.
+          # Use "repo" for changes that affect the project as a whole.
+          allowed_modules=(
+            "repo"
+          )
+
+          pattern='^((\[unstable\] (BREAKING|deprecation))|BREAKING|deprecation|feature|release|fix|docs|refactor|perf|test|ci|chore|revert)\(([a-z][a-z0-9-]*)\): [a-z].*$'
 
           if [[ ! "$PR_TITLE" =~ $pattern ]]; then
             echo "Invalid pull request title: $PR_TITLE"
             echo
             echo "Use: <type>(<module>): <lowercase title>"
             echo "Examples:"
-            echo "  feature(reactivity): add computed signals"
-            echo "  fix(i18n): preserve escaped commas"
-            echo "  [unstable] BREAKING(router): replace route matcher"
+            echo "  feature(repo): add computed signals"
+            echo "  fix(repo): preserve escaped commas"
+            echo "  chore(repo): update shared configuration"
+            echo "  [unstable] BREAKING(repo): replace signal behavior"
+            exit 1
+          fi
+
+          module="${BASH_REMATCH[4]}"
+
+          if [[ ! " ${allowed_modules[*]} " =~ " ${module} " ]]; then
+            echo "Invalid pull request module: $module"
+            echo
+            echo "Allowed modules: ${allowed_modules[*]}"
+            echo "Use \"repo\" for changes that affect the project as a whole."
             exit 1
           fi
