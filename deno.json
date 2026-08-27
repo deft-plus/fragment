@@ -1,0 +1,53 @@
+{
+  "workspace": [""],
+  "tasks": {
+    "check": "deno check",
+    "lint": "deno lint --permit-no-files && deno fmt --check",
+    "fmt": "deno fmt",
+    "test": "deno test --coverage=.coverage --coverage-threshold=100 --clean --permit-no-files",
+    "test:u": "deno test -u --coverage=.coverage --coverage-threshold=100 --clean --permit-no-files",
+    "coverage": "deno coverage --html --output=.coverage/html .coverage",
+    "jsdoc:lint": "deno doc --lint '*/**/*.ts'",
+    "jsdoc:generate": "deno doc --html --output=.docs '*/**/*.ts'"
+  },
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "dom.extras", "deno.ns"],
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "exclude": [".git", ".coverage", ".docs"],
+  "fmt": {
+    "include": ["./"],
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "singleQuote": true,
+    "proseWrap": "never"
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"],
+      "include": [
+        "no-console",
+        "no-eval",
+        "eqeqeq",
+        "camelcase",
+        "no-self-compare",
+        "ban-untagged-todo",
+        "no-external-import",
+        "no-sparse-arrays",
+        "no-non-null-assertion",
+        "no-non-null-asserted-optional-chain",
+        "explicit-function-return-type",
+        "explicit-module-boundary-types",
+        "no-sync-fn-in-async-fn",
+        "single-var-declarator",
+        "verbatim-module-syntax",
+        "no-throw-literal",
+        "prefer-ascii"
+      ],
+      "exclude": ["no-empty-interface"]
+    }
+  }
+}

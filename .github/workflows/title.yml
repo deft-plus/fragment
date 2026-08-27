@@ -1,0 +1,33 @@
+name: Lint PR title
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+
+permissions:
+  pull-requests: read
+
+jobs:
+  main:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate title format
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          pattern='^((\[unstable\] (BREAKING|deprecation))|BREAKING|deprecation|feature|release|fix|docs|refactor|perf|test|ci|chore|revert)\([a-z][a-z0-9-]*\): [a-z].*$'
+
+          if [[ ! "$PR_TITLE" =~ $pattern ]]; then
+            echo "Invalid pull request title: $PR_TITLE"
+            echo
+            echo "Use: <type>(<module>): <lowercase title>"
+            echo "Examples:"
+            echo "  feature(reactivity): add computed signals"
+            echo "  fix(i18n): preserve escaped commas"
+            echo "  [unstable] BREAKING(router): replace route matcher"
+            exit 1
+          fi
