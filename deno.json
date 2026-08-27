@@ -1,5 +1,5 @@
 {
-  "workspace": [""],
+  "workspace": ["./reactivity"],
   "tasks": {
     "check": "deno check",
     "lint": "deno lint --permit-no-files && deno fmt --check",
