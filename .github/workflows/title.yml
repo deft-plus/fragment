@@ -24,6 +24,7 @@ jobs:
           # Use "repo" for changes that affect the project as a whole.
           allowed_modules=(
             "repo"
+            "reactivity"
           )
 
           pattern='^((\[unstable\] (BREAKING|deprecation))|BREAKING|deprecation|feature|release|fix|docs|refactor|perf|test|ci|chore|revert)\(([a-z][a-z0-9-]*)\): [a-z].*$'

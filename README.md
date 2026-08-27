@@ -1,19 +1,16 @@
 # Fragment
 
-🧩 **Fragment is a framework-agnostic TypeScript ecosystem providing everything
-you need to build complete applications across different frameworks. ⚡️🚀.** ⚡
+🧩 **Fragment is a framework-agnostic TypeScript ecosystem providing everything you need to build complete applications across different frameworks. ⚡️🚀.** ⚡
 
 > [!IMPORTANT]
-> Fragment is in its initial development stage. APIs and packages are not ready
-> for production use yet.
+> Fragment is in its initial development stage. APIs and packages are not ready for production use yet.
 
 ## Goals
 
 - Provide reusable application tooling without coupling it to a UI framework.
 - Keep every capability independently installable and usable.
 - Offer first-class integrations for different frameworks through thin adapters.
-- Share consistent types, tooling, testing, documentation, and release practices
-  across the ecosystem.
+- Share consistent types, tooling, testing, documentation, and release practices across the ecosystem.
 
 | Module     | Description                              | Status      |
 | ---------- | ---------------------------------------- | ----------- |
@@ -58,8 +55,7 @@ deno task jsdoc:lint      # Validate public API documentation
 deno task jsdoc:generate  # Generate local API documentation
 ```
 
-The test task discovers tests across every workspace module, reports coverage,
-and requires 100% coverage.
+The test task discovers tests across every workspace module, reports coverage, and requires 100% coverage.
 
 ## Pull requests
 
@@ -71,14 +67,11 @@ fix(i18n): preserve escaped commas
 docs(repo): explain the workspace layout
 ```
 
-See [`AGENTS.md`](./AGENTS.md) for the complete contribution, testing,
-documentation, and release conventions.
+See [`AGENTS.md`](./AGENTS.md) for the complete contribution, testing, documentation, and release conventions.
 
 ## Publishing
 
-Creating a GitHub release runs the complete quality gate and publishes eligible
-workspace packages to JSR with provenance. Package versions must be updated in
-their module configuration before the release is created.
+Creating a GitHub release runs the complete quality gate and publishes eligible workspace packages to JSR with provenance. Package versions must be updated in their module configuration before the release is created.
 
 ## License
 
