@@ -15,10 +15,10 @@
   ],
   "license": "Apache-2.0",
   "author": "Deft+",
-  "homepage": "https://github.com/deft-plus/reactivity#README.md",
+  "homepage": "https://github.com/fragment/reactivity#README.md",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deft-plus/reactivity.git"
+    "url": "git+https://github.com/fragment/reactivity.git"
   },
   "imports": {
     "@std/async": "jsr:@std/async@^1.5.0",

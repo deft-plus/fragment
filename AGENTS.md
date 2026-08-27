@@ -2,7 +2,7 @@
 
 ## Project overview
 
-Fragment is a Deno 2.9+ TypeScript monorepo for framework-agnostic web application tooling. Each top-level module is developed as an independent workspace package and may be published to JSR under the `@deft-plus` scope.
+Fragment is a Deno 2.9+ TypeScript monorepo for framework-agnostic web application tooling. Each top-level module is developed as an independent workspace package and may be published to JSR under the `@fragment` scope.
 
 Keep shared behavior framework-independent. Framework-specific integrations must depend on public module APIs and must not leak framework runtime concepts into foundational packages.
 

@@ -1,21 +1,21 @@
 # 🎯 Reactivity
 
-[![JSR](https://jsr.io/badges/@deft-plus/reactivity)](https://jsr.io/@deft-plus/reactivity) [![JSR Score](https://jsr.io/badges/@deft-plus/reactivity/score)](https://jsr.io/@deft-plus/reactivity)
+[![JSR](https://jsr.io/badges/@fragment/reactivity)](https://jsr.io/@fragment/reactivity) [![JSR Score](https://jsr.io/badges/@fragment/reactivity/score)](https://jsr.io/@fragment/reactivity)
 
-The `@deft-plus/reactivity` module combines the power of reactive signals and stores to manage both individual reactive values and global state in your application. With this module, you can create reactive values (signals), manage derived values, and encapsulate state in stores, all with minimal boilerplate and a functional programming style.
+The `@fragment/reactivity` module combines the power of reactive signals and stores to manage both individual reactive values and global state in your application. With this module, you can create reactive values (signals), manage derived values, and encapsulate state in stores, all with minimal boilerplate and a functional programming style.
 
 ## Installation
 
-Install the `@deft-plus/reactivity` package using deno:
+Install the `@fragment/reactivity` package using deno:
 
 ```bash
-deno add @deft-plus/reactivity
+deno add @fragment/reactivity
 ```
 
 Or using npm:
 
 ```bash
-npx jsr add @deft-plus/reactivity
+npx jsr add @fragment/reactivity
 ```
 
 ### Global logging
@@ -49,7 +49,7 @@ Use `signal()` to create a `WritableSignal`. Writable signals allow updating the
 Example:
 
 ```typescript
-import { signal } from '@deft-plus/reactivity';
+import { signal } from '@fragment/reactivity';
 
 const counter = signal(0);
 
@@ -77,7 +77,7 @@ Use `memoSignal()` to create memoized signals that automatically update based on
 Example:
 
 ```typescript
-import { memoSignal } from '@deft-plus/reactivity';
+import { memoSignal } from '@fragment/reactivity';
 
 const isEven = memoSignal(() => counter() % 2 === 0);
 ```
@@ -91,7 +91,7 @@ Memoized signals can be configured with an equality comparator to prevent unnece
 Example:
 
 ```typescript
-import { toSignal } from '@deft-plus/reactivity';
+import { toSignal } from '@fragment/reactivity';
 
 // Function parameter.
 const data = toSignal(async () => {
@@ -113,7 +113,7 @@ You can also use events to trigger signal updates. Just dispatch an event with t
 Example:
 
 ```typescript
-import { signal } from '@deft-plus/reactivity';
+import { signal } from '@fragment/reactivity';
 
 using counter = signal(0, { name: 'counter', allowEvents: true });
 
@@ -127,7 +127,7 @@ This allows you to update signals from event listeners, making it easy to integr
 Example:
 
 ```typescript
-import { signal } from '@deft-plus/reactivity';
+import { signal } from '@fragment/reactivity';
 {
   using counter = signal(0, {
     name: 'counter',
@@ -150,7 +150,7 @@ import { signal } from '@deft-plus/reactivity';
 Example:
 
 ```typescript
-import { effect, signal } from '@deft-plus/reactivity';
+import { effect, signal } from '@fragment/reactivity';
 
 const counter = signal(0);
 
@@ -189,7 +189,7 @@ A store is an object containing signals and actions. It leverages signals intern
 Example:
 
 ```typescript
-import { store } from '@deft-plus/reactivity';
+import { store } from '@fragment/reactivity';
 
 type CounterStore = {
   count: number;
@@ -217,7 +217,7 @@ Stores can include derived values that depend on other signals. These derived va
 Example:
 
 ```typescript
-import { store } from '@deft-plus/reactivity';
+import { store } from '@fragment/reactivity';
 
 type CounterStore = {
   count: number;
@@ -248,4 +248,4 @@ The `get` function provides access to the store's internal signals and actions. 
 
 ## Summary
 
-`@deft-plus/reactivity` unifies signals and stores, providing a flexible, efficient way to manage both individual reactive values and global state. With signals, you get fine-grained reactivity and lazy evaluation. With stores, you encapsulate state and logic, making it easy to maintain complex state while ensuring immutability and performance.
+`@fragment/reactivity` unifies signals and stores, providing a flexible, efficient way to manage both individual reactive values and global state. With signals, you get fine-grained reactivity and lazy evaluation. With stores, you encapsulate state and logic, making it easy to maintain complex state while ensuring immutability and performance.
