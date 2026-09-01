@@ -1,11 +1,11 @@
 {
-  "workspace": ["./reactivity"],
+  "workspace": ["./i18n", "./reactivity"],
   "tasks": {
     "check": "deno check",
     "lint": "deno lint --permit-no-files && deno fmt --check",
     "fmt": "deno fmt",
-    "test": "deno test --coverage=.coverage --coverage-threshold=100 --clean --permit-no-files",
-    "test:u": "deno test -u --coverage=.coverage --coverage-threshold=100 --clean --permit-no-files",
+    "test": "deno test --allow-read=. --allow-write=.  --coverage=.coverage --coverage-threshold=100 --clean --permit-no-files",
+    "test:u": "deno test -u --allow-read=. --allow-write=. --coverage=.coverage --coverage-threshold=100 --clean --permit-no-files",
     "coverage": "deno coverage --html --output=.coverage/html .coverage",
     "jsdoc:lint": "deno doc --lint '*/**/*.ts'",
     "jsdoc:generate": "deno doc --html --output=.docs '*/**/*.ts'"

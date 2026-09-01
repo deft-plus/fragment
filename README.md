@@ -12,10 +12,10 @@
 - Offer first-class integrations for different frameworks through thin adapters.
 - Share consistent types, tooling, testing, documentation, and release practices across the ecosystem.
 
-| Module     | Description                              | Status      |
-| ---------- | ---------------------------------------- | ----------- |
-| `reactive` | 🎯 Effortless reactive values            | Coming Soon |
-| `i18n`     | 🌍 Internationalization and localization | Coming Soon |
+| Module                     | Description                              | Status      |
+| -------------------------- | ---------------------------------------- | ----------- |
+| [`reactive`](/reactivity/) | 🎯 Effortless reactive values            | Coming Soon |
+| [`i18n`](/i18n/)           | 🌍 Internationalization and localization | Coming Soon |
 
 <!--
 Thinking if adding the following modules

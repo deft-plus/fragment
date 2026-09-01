@@ -24,6 +24,7 @@ jobs:
           # Use "repo" for changes that affect the project as a whole.
           allowed_modules=(
             "repo"
+            "i18n"
             "reactivity"
           )
 
